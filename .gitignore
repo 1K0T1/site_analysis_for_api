@@ -1,0 +1,10 @@
+# среда
+venv/
+
+# временные файлы
+__pycache__/
+*.pyc
+
+# папки
+data_base/
+users_file/

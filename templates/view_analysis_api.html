@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="secret letter"> <!-- для поисковика -->
+    <title>Secret</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+</head>
+<body>
+    <main class="view_analysis_api">
+        <strong class="name">{{message}}</strong>
+        <form method="post" action="/view_analysis_api" class="postlink">
+            <label>Введите ссылку</label>
+            <input type="url" class="inputurl" name="buttonurl">
+            <input type="submit" class="buttonurl">
+        </form>
+        <form class="list" action="/view_analysis_api/link">
+            <button type="submit">Скачать список ссылок</button>
+        </form>
+        <form class="filehtml" action="/view_analysis_api/html">
+            <button type="submit">Скачать html файлы</button>
+        </form>
+        <form class="filejs" action="/view_analysis_api/js">
+            <button type="submit">Скачать js файлы</button>
+        </form>
+        <select class="listfile" id="fileList" name="buttonurl" size="16">
+            <option disabled>Загрузка...</option>
+        </select>
+        <pre class="viewcode"><code>{{fileMessage}}</code></pre>
+    </main>
+
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="{{ url_for('static', filename='viewfile.js') }}"></script>
+    <script>
+        // подстановка кода
+        function updateCode(newCode, lang = "") {
+        const codeBlock = document.querySelector('main.view_analysis_api .viewcode code');
+        codeBlock.className = lang ? `language-${lang}` : "";
+        codeBlock.innerText = newCode;
+        hljs.highlightElement(codeBlock);
+        }
+
+        setTimeout(() => {
+        updateCode(`Пусто...`, "js");
+        }, 1000);
+    </script>
+</body>
+</html>
