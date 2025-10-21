@@ -332,13 +332,14 @@ main.view_analysis_api .postlink{
   grid-row: 2;
   background: #dfebe9;
   border-radius: 20px;
-  padding: 4px 4px;
+  padding: 4px 20px;
   cursor: pointer;
   text-align: center;
   justify-self: center;
   align-self: start;
   transition: 0.4s;
   width: 70%;
+  max-width: 354px;
 }
 
 main.view_analysis_api .postlink .inputurl{
@@ -364,7 +365,7 @@ main.view_analysis_api .list {
   transition: 0.4s;
   width: 100%;
   max-width: 200px;
-  justify-content: center;
+  justify-self: right;
 }
 
 main.view_analysis_api .filehtml {
@@ -378,7 +379,7 @@ main.view_analysis_api .filehtml {
   transition: 0.4s;
   width: 100%;
   max-width: 200px;
-  justify-content: center;
+  justify-self: center;
 }
 
 main.view_analysis_api .filejs {
@@ -392,28 +393,29 @@ main.view_analysis_api .filejs {
   transition: 0.4s;
   width: 100%;
   max-width: 200px;
-  justify-content: center;
+  justify-self: left;
 }
 
 main.view_analysis_api .listfile{
   display: grid;
   grid-column: 1;
-  grid-row: 4;
+  grid-row: 5;
   background: #cbc6c6;
-  cursor:help ;
+  cursor: help;
   transition: 0.4s;
   transform: scale(1.1) translateX(50px);
   width: 70%;
+  max-height: 290px;
   transform-origin: right;
   position: relative;
 }
 
 main.view_analysis_api .viewcode {
   display: grid;
-  grid-column: 2 / 5;
-  grid-row: 4 / 6;
+  grid-column: 2 / 6;
+  grid-row: 5 / 6;
   font-size: 12px;
-  max-width: 1000px;
+  max-width: 920px;
   max-height: 600px;
   background: linear-gradient(135deg, #2b2b2b, #3c3c3c, #36414d);
   padding: 12px;
@@ -423,7 +425,7 @@ main.view_analysis_api .viewcode {
   overflow: auto;
   font-family: 'Fira Code', monospace;
   align-self: start;
-  justify-self: start;
+  justify-self: left;
 }
 
 main.view_analysis_api .viewcode code {

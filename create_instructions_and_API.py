@@ -6,16 +6,20 @@ import re
 import shutil
 from urllib.parse import urljoin, urlparse
 
-#что бы автоматом открывать и зыкрывать бразуер
+
+# что бы автоматом открывать и зыкрывать бразуер
 def browser(func):
     def wrapper(self, *args, **kwargs):
         with sync_playwright() as p:
-            browser = p.chromium.launch(headless=False, args=[
-                "--disable-blink-features=AutomationControlled",
-                "--disable-dev-shm-usage",
-                "--no-sandbox",
-                "--disable-infobars"
-            ])
+            browser = p.chromium.launch(
+                headless=False,
+                args=[
+                    "--disable-blink-features=AutomationControlled",
+                    "--disable-dev-shm-usage",
+                    "--no-sandbox",
+                    "--disable-infobars",
+                ],
+            )
             context = browser.new_context()
             page = context.new_page()
             result = func(self, page, *args, **kwargs)
@@ -23,10 +27,12 @@ def browser(func):
                 return result
             finally:
                 browser.close()
+
     return wrapper
 
-class Instructions_API():
-    #парсим код
+
+class Instructions_API:
+    # парсим код
     @browser
     def open_resource(self, page, resource, filename):
         users_files = Path(__file__).parent / "users_file" / filename
@@ -35,39 +41,38 @@ class Instructions_API():
         users_files.mkdir(parents=True, exist_ok=True)
         page.goto(resource, wait_until="domcontentloaded", timeout=60000)
         page.wait_for_timeout(3000)
-        
-        prefix= ["/popular-in"]
+
+        prefix = ["/popular-in"]
         links_a = []
-        links_full = []
-        templates = set() #что бы не повторялись страницы
-        hrefs = set() #что бы не повторялись страницы
-        
+        templates = set()  # что бы не повторялись страницы
+        hrefs = set()  # что бы не повторялись страницы
+
         # все ссылки
         match = re.search(r"https?://([^/]+)/?", page.url)
         base_domain = match.group(1) if match else ""
         links = page.query_selector_all("a")
-        
+
         for link in links:
             href = link.get_attribute("href")
             if not href:
                 continue
-            blocked= False
+            blocked = False
             for domens in prefix:
                 if re.search(domens, href):
-                    blocked= True
+                    blocked = True
                     break
-                
+
             if blocked:
                 continue
             full_url = urljoin(page.url, href)
-            
+
             if base_domain not in full_url:
                 continue
-            
+
             # создаем шаблоны
             parsed = urlparse(full_url)
             path_parts = parsed.path.strip("/").split("/")
-            
+
             if len(path_parts) >= 2:
                 template = f"{parsed.netloc}/{path_parts[0]}"
             else:
@@ -75,7 +80,7 @@ class Instructions_API():
 
             if template in templates:
                 continue
-            
+
             print(full_url)
             templates.add(template)
             prefix.append(full_url)
@@ -86,10 +91,10 @@ class Instructions_API():
         html = page.content()
         filehtml = users_files / "index.html"
         filehtml.write_text(html, encoding="utf-8")
-        
+
         for i, htmls in enumerate(hrefs, start=1):
             if htmls.startswith("http") or htmls.startswith("https"):
-                url = htmls 
+                url = htmls
             else:
                 url = page.url.rstrip("/") + "/" + htmls.lstrip("/")
             page.goto(url, wait_until="domcontentloaded", timeout=60000)
@@ -100,7 +105,7 @@ class Instructions_API():
 
         # все js файлы
         scripts = page.query_selector_all("script[src]")
-        
+
         for script in scripts:
             src = script.get_attribute("src")
             full_url = urljoin(page.url, src)
@@ -114,81 +119,81 @@ class Instructions_API():
                 if ".js" in name:
                     name = name.split(".js")[0] + ".js"
                 else:
-                    name = re.split(r'[?&]', name)[0]
+                    name = re.split(r"[?&]", name)[0]
                 name = name[:150]
                 name = re.sub(r'[<>:"/\\|?*]=&', "_", name)
                 filejs = users_files / f"{name}"
                 filejs.write_text(r.text, encoding="utf-8")
             except:
                 return None
-        
-    #сохраняем в txt все ссылки
+
+    # сохраняем в txt все ссылки
     @browser
     def all_links(self, page, resource, filename):
         users_files = Path(__file__).parent / "users_file" / filename
         users_files.mkdir(parents=True, exist_ok=True)
         page.goto(resource, wait_until="domcontentloaded", timeout=60000)
         page.wait_for_timeout(3000)
-        
-        prefix= ["/popular-in"]
+
+        prefix = ["/popular-in"]
         links_a = []
         links_full = []
-        templates = set() #что бы не повторялись страницы
-        hrefs = set() #что бы не повторялись страницы
-        
+        templates = set()  # что бы не повторялись страницы
+        hrefs = set()  # что бы не повторялись страницы
+
         # все ссылки
         match = re.search(r"https?://([^/]+)/?", page.url)
         base_domain = match.group(1) if match else ""
         links = page.query_selector_all("a")
-        
+
         for link in links:
             href = link.get_attribute("href")
-            
+
             if not href:
                 continue
-            blocked= False
-            
+            blocked = False
+
             for domens in prefix:
                 if re.search(domens, href):
-                    blocked= True
+                    blocked = True
                     break
             if blocked:
                 continue
-            
+
             full_url = urljoin(page.url, href)
-            
+
             if base_domain not in full_url:
                 continue
-            
+
             # создаем шаблоны
             parsed = urlparse(full_url)
             path_parts = parsed.path.strip("/").split("/")
-            
-            if len(path_parts) >= 2:
+
+            if len(path_parts) >= 1:
                 template = f"{parsed.netloc}/{path_parts[0]}"
             else:
                 template = f"{parsed.netloc}/"
 
             if template in templates:
                 continue
-            
+
             print(full_url)
             templates.add(template)
             links_a.append(full_url)
             hrefs.add(full_url)
             links_full.extend(links_a)
-        
+
         for urls in links_a:
             page.goto(urls, wait_until="domcontentloaded", timeout=60000)
-            page.wait_for_timeout(6000)
+            page.wait_for_timeout(3000)
             a_tags = page.query_selector_all("a[href]")
             link_tags = page.query_selector_all("link[href]")
-            
-            hrefs = [
+
+            content_hrefs = [
                 urljoin(page.url, tag.get_attribute("href"))
                 for tag in a_tags + link_tags
                 if tag.get_attribute("href")
-                ]
-            links_full.extend(hrefs)
-            
+            ]
+            links_full.extend(content_hrefs)
+
         return links_full
