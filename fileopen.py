@@ -71,3 +71,13 @@ class Download_File:
         with open(txt_path, "w", encoding="utf-8") as file:
             file.write("\n".join(links) + "\n")
         return txt_path
+
+    def loading_link(self, name):
+        users_files = Path(__file__).parent / "users_file" / name
+        users_files.mkdir(parents=True, exist_ok=True)
+        txt_folder = users_files / "dfile"
+        txt_folder.mkdir(parents=True, exist_ok=True)
+        txt_path = txt_folder / "links.txt"
+        if txt_path.is_file():
+            return txt_path
+        return None

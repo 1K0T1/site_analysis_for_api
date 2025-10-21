@@ -15,13 +15,13 @@
 <body>
     <main class="view_analysis_api">
         <strong class="name">{{message}}</strong>
-        <strong class="loading">{{loading_message}}</strong>
+        <strong class="loading" id="status">{{loading_message}}</strong>
         <form method="post" action="/view_analysis_api" class="postlink">
             <label>Введите ссылку</label>
             <input type="url" class="inputurl" name="buttonurl">
             <input type="submit" class="buttonurl">
         </form>
-        <form class="list" action="/view_analysis_api/link">
+        <form class="list" id="download-list" action="/view_analysis_api/link">
             <button type="submit">Скачать список ссылок</button>
         </form>
         <form class="filehtml" action="/view_analysis_api/html">
@@ -52,6 +52,7 @@
             updateCode(`Пусто...`, "js");
         }, 1000);
     </script>
+    <script src="{{ url_for('static', filename='check_file.js') }}"></script>
 </body>
 
 </html>

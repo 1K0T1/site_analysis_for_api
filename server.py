@@ -151,6 +151,9 @@ def restore_password(token):
 
 
 # страница создания инструкций и api
+def run_creature_api(link, name):
+    Instructions_API().open_resource(link, name)
+
 @app.route("/view_analysis_api", methods=["GET", "POST", "DELETE"])
 def view_analysis_api():
     name = session.get("name")
@@ -159,8 +162,7 @@ def view_analysis_api():
     if request.method == "POST":
         link = request.form.get("buttonurl")
         session["link"] = link
-        api_analysis = Instructions_API()
-        p = Process(target=api_analysis.open_resource, args=(link, name))
+        p = Process(target=run_creature_api, args=(link, name))
         p.start()
     if request.method == "GET":
         links = None
@@ -200,12 +202,37 @@ def download_js():
 
 
 # пользователь скачивает ссылки
+def run_download(link, name):
+    Download_File().link_download(link, name)
+
 @app.route("/view_analysis_api/link", methods=["GET", "POST"])
 def download_links():
     link = None
     name = session.get("name")
     link = session.get("link")
-    path = Download_File().link_download(link, name)
+    p = Process(target=run_download, args=(link, name))
+    p.start()
+    return jsonify({"status": "started"})
+
+    
+# проверка файла
+@app.route("/check_file")
+def check_file():
+    link = None
+    name = session.get("name")
+    link = session.get("link")
+    path = Download_File().loading_link(name)
+    if path is None:
+        return jsonify({"exists": False})
+    return jsonify({"exists": path.exists()})
+    
+    
+@app.route("/download_list")
+def loading_list():
+    link = None
+    name = session.get("name")
+    link = session.get("link")
+    path = Download_File().loading_link(name)
     return send_file(path, as_attachment=True)
 
 
