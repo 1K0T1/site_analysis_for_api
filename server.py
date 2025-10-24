@@ -27,7 +27,7 @@ from dotenv import load_dotenv  # для токенов
 from gmail_restore import Restore_account
 from data_sql import Data_base
 from create_instructions_and_API import Instructions_API
-from fileopen import Open_List, Open_File, Download_File
+from fileopen import Open_List, Open_File, Download_File, Download_All
 
 env_key = Path(__file__).parent / "key" / ".env"
 
@@ -214,31 +214,57 @@ def download_links():
     p.start()
     return jsonify({"status": "started"})
 
-    
+
 # проверка файла
 @app.route("/check_file")
 def check_file():
-    link = None
     name = session.get("name")
-    link = session.get("link")
     path = Download_File().loading_link(name)
     if path is None:
         return jsonify({"exists": False})
     return jsonify({"exists": path.exists()})
-    
-    
+
+
 @app.route("/download_list")
 def loading_list():
-    link = None
     name = session.get("name")
-    link = session.get("link")
     path = Download_File().loading_link(name)
     return send_file(path, as_attachment=True)
 
 
+# пользователь скачивает все файлы
+def run_load_all_file(name):
+    Download_All().download_all_file(name)
+    
+@app.route("/view_analysis_api/allfiles", methods=["GET", "POST"])
+def download_all_file():
+    name = session.get("name")
+    p = Process(target=run_load_all_file, args=(name,))
+    p.start()
+    return jsonify({"status": "started"})
+
+
+# проверка файла
+@app.route("/check_all_file")
+def check_all_file():
+    name = session.get("name")
+    path = Download_All().load_all_files(name)
+    if path is None:
+        return jsonify({"exists": False})
+    return jsonify({"exists": path.exists()})
+
+
+@app.route("/download_all_file")
+def loading_all_file():
+    name = session.get("name")
+    path = Download_All().load_all_files(name)
+    return send_file(path, as_attachment=True)
+
+
+# лог и самоподписанный сертификат
 if __name__ == "__main__":
     cert_path = Path(__file__).parent / "pem" / r"localhost+2.pem"
     key_path = Path(__file__).parent / "pem" / r"localhost+2-key.pem"
     socketio.run(
         app, debug=True, ssl_context=(cert_path, key_path)
-    )  # лог и самоподписанный сертификат
+    )

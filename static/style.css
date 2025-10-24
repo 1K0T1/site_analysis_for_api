@@ -1,11 +1,12 @@
 /*главная страница*/
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   width: 100%;
   height: 100%;
-  background: -webkit-linear-gradient(100deg, #bdbdbd,#dedede,#ffffff);
-  background: linear-gradient(150deg, #bdbdbd,#dedede,#ffffff, #b8d6e3);
+  background: -webkit-linear-gradient(100deg, #bdbdbd, #dedede, #ffffff);
+  background: linear-gradient(150deg, #bdbdbd, #dedede, #ffffff, #b8d6e3);
   height: 110vh;
   background-attachment: fixed;
 }
@@ -326,7 +327,14 @@ main.view_analysis_api .name {
   grid-row: 1;
 }
 
-main.view_analysis_api .postlink{
+main.view_analysis_api .loading {
+  display: grid;
+  grid-column: 3;
+  grid-row: 1;
+  justify-self: center;
+}
+
+main.view_analysis_api .postlink {
   display: grid;
   grid-column: 2 / 5;
   grid-row: 2;
@@ -342,13 +350,13 @@ main.view_analysis_api .postlink{
   max-width: 354px;
 }
 
-main.view_analysis_api .postlink .inputurl{
+main.view_analysis_api .postlink .inputurl {
   width: 100%;
   max-width: 350px;
   justify-self: center;
 }
 
-main.view_analysis_api .postlink .buttonurl{
+main.view_analysis_api .postlink .buttonurl {
   width: 100%;
   max-width: 115px;
   justify-self: center;
@@ -365,7 +373,7 @@ main.view_analysis_api .list {
   transition: 0.4s;
   width: 100%;
   max-width: 200px;
-  justify-self: right;
+  justify-self: left;
 }
 
 main.view_analysis_api .filehtml {
@@ -393,13 +401,13 @@ main.view_analysis_api .filejs {
   transition: 0.4s;
   width: 100%;
   max-width: 200px;
-  justify-self: left;
+  justify-self: right;
 }
 
-main.view_analysis_api .listfile{
+main.view_analysis_api .listfile {
   display: grid;
   grid-column: 1;
-  grid-row: 5;
+  grid-row: 5 / 6;
   background: #cbc6c6;
   cursor: help;
   transition: 0.4s;
@@ -407,7 +415,48 @@ main.view_analysis_api .listfile{
   width: 70%;
   max-height: 290px;
   transform-origin: right;
-  position: relative;
+}
+
+main.view_analysis_api .allfiles {
+  display: grid;
+  grid-column: 2;
+  grid-row: 4;
+  background: #bcc9e3;
+  border-radius: 9px;
+  padding: 2px 5px;
+  cursor: pointer;
+  transition: 0.4s;
+  width: 100%;
+  max-width: 200px;
+  justify-self: left;
+}
+
+main.view_analysis_api .AIgenerate {
+  display: grid;
+  grid-column: 3;
+  grid-row: 4;
+  background: #bcc9e3;
+  border-radius: 9px;
+  padding: 2px 5px;
+  cursor: pointer;
+  transition: 0.4s;
+  width: 100%;
+  max-width: 200px;
+  justify-self: center;
+}
+
+main.view_analysis_api .copy {
+  display: grid;
+  grid-column: 4;
+  grid-row: 4;
+  background: #bcc9e3;
+  border-radius: 9px;
+  padding: 2px 5px;
+  cursor: pointer;
+  transition: 0.4s;
+  width: 100%;
+  max-width: 200px;
+  justify-self: right;
 }
 
 main.view_analysis_api .viewcode {
@@ -420,7 +469,7 @@ main.view_analysis_api .viewcode {
   background: linear-gradient(135deg, #2b2b2b, #3c3c3c, #36414d);
   padding: 12px;
   border-radius: 8px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
   color: #fdfdfd;
   overflow: auto;
   font-family: 'Fira Code', monospace;
@@ -430,5 +479,6 @@ main.view_analysis_api .viewcode {
 
 main.view_analysis_api .viewcode code {
   display: block;
-  white-space: pre; /* сохраняем форматирование */
+  white-space: pre;
+  /* сохраняем форматирование */
 }

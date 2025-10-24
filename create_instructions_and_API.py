@@ -1,4 +1,4 @@
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeoutError
 import requests
 from urllib.parse import urljoin
 from pathlib import Path
@@ -97,11 +97,14 @@ class Instructions_API:
                 url = htmls
             else:
                 url = page.url.rstrip("/") + "/" + htmls.lstrip("/")
-            page.goto(url, wait_until="domcontentloaded", timeout=60000)
-            page.wait_for_timeout(3000)
-            html_con = page.content()
-            filehtml = users_files / f"{i}.html"
-            filehtml.write_text(html_con, encoding="utf-8")
+            try:
+                page.goto(url, wait_until="domcontentloaded", timeout=60000)
+                page.wait_for_timeout(3000)
+                html_con = page.content()
+                filehtml = users_files / f"{i}.html"
+                filehtml.write_text(html_con, encoding="utf-8")
+            except PlaywrightTimeoutError:
+                return f"Ссылка не загрузилась: {url}"
 
         # все js файлы
         scripts = page.query_selector_all("script[src]")
@@ -133,7 +136,7 @@ class Instructions_API:
         users_files = Path(__file__).parent / "users_file" / filename
         users_files.mkdir(parents=True, exist_ok=True)
         page.goto(resource, wait_until="domcontentloaded", timeout=60000)
-        page.wait_for_timeout(3000)
+        page.wait_for_timeout(9000)
 
         prefix = ["/popular-in"]
         links_a = []
@@ -184,16 +187,22 @@ class Instructions_API:
             links_full.extend(links_a)
 
         for urls in links_a:
-            page.goto(urls, wait_until="domcontentloaded", timeout=60000)
-            page.wait_for_timeout(3000)
-            a_tags = page.query_selector_all("a[href]")
-            link_tags = page.query_selector_all("link[href]")
+            try:
+                page.goto(urls, wait_until="domcontentloaded", timeout=60000)
+                page.wait_for_timeout(9000)
+                a_tags = page.query_selector_all("a[href]")
+                link_tags = page.query_selector_all("link[href]")
 
-            content_hrefs = [
-                urljoin(page.url, tag.get_attribute("href"))
-                for tag in a_tags + link_tags
-                if tag.get_attribute("href")
-            ]
-            links_full.extend(content_hrefs)
+                content_hrefs = [
+                    urljoin(page.url, tag.get_attribute("href"))
+                    for tag in a_tags + link_tags
+                    if tag.get_attribute("href")
+                ]
+                
+                links_full.extend(content_hrefs)
+            except PlaywrightTimeoutError:
+                links_full.append(f"Ссылка не загрузилась: {urls}")
+                continue
+                
 
         return links_full

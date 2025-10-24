@@ -81,3 +81,30 @@ class Download_File:
         if txt_path.is_file():
             return txt_path
         return None
+    
+class Download_All:
+    
+    def download_all_file(self, name):
+        users_files = Path(__file__).parent / "users_file" / name
+        users_files.mkdir(parents=True, exist_ok=True)
+        all_files_folder = users_files / "dfile"
+        all_files_folder.mkdir(parents=True, exist_ok=True)
+        zip_path = all_files_folder / "all.zip"
+        if zip_path.is_file():
+            return zip_path
+        with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
+            for file in users_files.iterdir():
+                if file.is_file():
+                    zipf.write(file, arcname=file.name)
+        return zip_path
+    
+    def load_all_files(self, name):
+        users_files = Path(__file__).parent / "users_file" / name
+        users_files.mkdir(parents=True, exist_ok=True)
+        all_files_folder = users_files / "dfile"
+        all_files_folder.mkdir(parents=True, exist_ok=True)
+        zip_path = all_files_folder / "all.zip"
+        if zip_path.is_file():
+            return zip_path
+        return None
+        
