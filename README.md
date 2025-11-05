@@ -24,4 +24,5 @@
 
 ## ⚙️ Установка
 
-```gh repo clone 1K0T1/site_analysis_for_api
+```
+gh repo clone 1K0T1/site_analysis_for_api
