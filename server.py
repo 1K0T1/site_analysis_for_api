@@ -27,7 +27,8 @@ from dotenv import load_dotenv  # для токенов
 from gmail_restore import Restore_account
 from data_sql import Data_base
 from create_instructions_and_API import Instructions_API
-from fileopen import Open_List, Open_File, Download_File, Download_All
+from fileopen import Open_List, Open_File, Download_File, Download_All, AiGenerate
+#from AI_analysis import AI_Analysis_Links
 
 env_key = Path(__file__).parent / "key" / ".env"
 
@@ -161,11 +162,9 @@ def view_analysis_api():
     link = None
     if request.method == "POST":
         link = request.form.get("buttonurl")
-        session["link"] = link
+        Data_base().add_url(name, link)
         p = Process(target=run_creature_api, args=(link, name))
         p.start()
-    if request.method == "GET":
-        links = None
     return render_template("view_analysis_api.html", message=namein)
 
 
@@ -207,9 +206,8 @@ def run_download(link, name):
 
 @app.route("/view_analysis_api/link", methods=["GET", "POST"])
 def download_links():
-    link = None
     name = session.get("name")
-    link = session.get("link")
+    link = Data_base().open_url(name)[0]
     p = Process(target=run_download, args=(link, name))
     p.start()
     return jsonify({"status": "started"})
@@ -259,6 +257,35 @@ def loading_all_file():
     name = session.get("name")
     path = Download_All().load_all_files(name)
     return send_file(path, as_attachment=True)
+
+# скачать медиа если это доступно
+
+# поймать поток если это доступно
+def run_flow_view(name, link):
+    Instructions_API().flow_download(link, name)
+
+@app.route("/view_analysis_api/flow_view")
+def route_flow_view():
+    name = session.get("name")
+    link = Data_base().open_url(name)[0]
+    p = Process(target=run_flow_view, args=(name, link))
+    p.start()
+    if link is None:
+        return jsonify({"status": False})
+    return jsonify({"status": True})
+
+# анализ с помощью AI
+def ai_generate(name, links):
+    urls = AiGenerate().sort_links(name, links)
+    return urls
+
+@app.route("/view_analysis_api/generate/analysis", methods=["GET", "POST"])
+def route_to_ai():
+    name = session.get("name")
+    file = None
+    p = Process(target=ai_generate, args=(name, file))
+    p.start()
+    return jsonify({"status": "started"})
 
 
 # лог и самоподписанный сертификат

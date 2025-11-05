@@ -15,7 +15,9 @@ from itsdangerous import (
     SignatureExpired,
 )
 
-db_path = Path(__file__).parent / "data_base" / "users_data.db"
+db_dir = Path(__file__).parent / "data_base"
+db_dir.mkdir(parents=True, exist_ok=True)
+db_path = db_dir / "users_data.db"
 
 
 # декоратор что бы автоматом был конект к бд
@@ -61,13 +63,14 @@ class Data_base:
         cursor.execute(
             """
         CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY,     -- Уникальный ID пользователя
-            login TEXT NOT NULL,         -- Имя
-            password TEXT NOT NULL,       -- Пароль
-            email TEXT NOT NULL,        -- Почта
-            date TEXT NOT NULL,         -- Дата регистрации
-            token TEXT,           -- Идентификатор токена
-            reset_token TEXT        -- Время запроса в сек.
+            id INTEGER PRIMARY KEY AUTOINCREMENT ,     -- Уникальный ID пользователя
+            login TEXT NOT NULL,                     -- Имя
+            password TEXT NOT NULL,                 -- Пароль
+            email TEXT NOT NULL,                     -- Почта
+            date TEXT NOT NULL,                      -- Дата регистрации
+            token TEXT,                             -- Идентификатор токена
+            reset_token TEXT,                       -- Время запроса в сек.
+            url TEXT                                 --ссылка парсинга
             )
         """
         )
@@ -133,3 +136,15 @@ class Data_base:
             (hash_password, user_id),
         )
         return "Пороль изменен"
+
+    # добовляем ссылку в бд
+    @sql_request
+    def add_url(self, cursor, name, url):
+        cursor.execute("UPDATE users SET url = ? WHERE login = ?", (url, name))
+
+    # берем ссылку из бд
+    @sql_request
+    def open_url(self, cursor, name):
+        cursor.execute("SELECT url FROM users WHERE login = ?", (name,))
+        url_view = cursor.fetchone()
+        return url_view

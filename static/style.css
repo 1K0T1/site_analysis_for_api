@@ -459,6 +459,34 @@ main.view_analysis_api .copy {
   justify-self: right;
 }
 
+main.view_analysis_api .flow_view {
+  display: grid;
+  grid-column: 5;
+  grid-row: 4;
+  background: #bcc9e3;
+  border-radius: 9px;
+  padding: 2px 5px;
+  cursor: pointer;
+  transition: 0.4s;
+  width: 100%;
+  max-width: 180px;
+  justify-self: left;
+}
+
+main.view_analysis_api .media_download {
+  display: grid;
+  grid-column: 5;
+  grid-row: 3;
+  background: #bcc9e3;
+  border-radius: 9px;
+  padding: 2px 5px;
+  cursor: pointer;
+  transition: 0.4s;
+  width: 100%;
+  max-width: 180px;
+  justify-self: left;
+}
+
 main.view_analysis_api .viewcode {
   display: grid;
   grid-column: 2 / 6;
@@ -480,5 +508,4 @@ main.view_analysis_api .viewcode {
 main.view_analysis_api .viewcode code {
   display: block;
   white-space: pre;
-  /* сохраняем форматирование */
 }

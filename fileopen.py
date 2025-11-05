@@ -62,9 +62,7 @@ class Download_File:
     def link_download(self, link, name):
         users_files = Path(__file__).parent / "users_file" / name
         users_files.mkdir(parents=True, exist_ok=True)
-        txt_folder = users_files / "dfile"
-        txt_folder.mkdir(parents=True, exist_ok=True)
-        txt_path = txt_folder / "links.txt"
+        txt_path = users_files / "links.txt"
         if txt_path.is_file():
             return txt_path
         links = Instructions_API().all_links(link, name)
@@ -75,13 +73,12 @@ class Download_File:
     def loading_link(self, name):
         users_files = Path(__file__).parent / "users_file" / name
         users_files.mkdir(parents=True, exist_ok=True)
-        txt_folder = users_files / "dfile"
-        txt_folder.mkdir(parents=True, exist_ok=True)
-        txt_path = txt_folder / "links.txt"
+        txt_path = users_files / "links.txt"
         if txt_path.is_file():
             return txt_path
         return None
-    
+
+
 class Download_All:
     
     def download_all_file(self, name):
@@ -108,3 +105,15 @@ class Download_All:
             return zip_path
         return None
         
+        
+class AiGenerate:
+
+    def sort_links(self, name, links):
+        users_files = Path(__file__).parent / "users_file" / name
+        uploads = Path(__file__).parent / users_files / "uploads"
+        uploads.mkdir(parents=True, exist_ok=True)
+        with open(links, "r+", encoding="utf-8") as f:
+            lines = f.readlines()
+
+        lines = list(dict.fromkeys(lines))
+        return lines

@@ -8,3 +8,7 @@ __pycache__/
 # папки
 data_base/
 users_file/
+
+#тесты
+test.py
+test.txt

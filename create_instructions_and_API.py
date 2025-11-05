@@ -1,7 +1,10 @@
 from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeoutError
+from playwright._impl._errors import TargetClosedError
 import requests
 from urllib.parse import urljoin
 from pathlib import Path
+import json
+import subprocess
 import re
 import shutil
 from urllib.parse import urljoin, urlparse
@@ -20,7 +23,10 @@ def browser(func):
                     "--disable-infobars",
                 ],
             )
-            context = browser.new_context()
+            context = browser.new_context(
+                user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0 Safari/537.36",
+                permissions=["microphone", "camera", "clipboard-read", "clipboard-write"],
+                )
             page = context.new_page()
             result = func(self, page, *args, **kwargs)
             try:
@@ -204,5 +210,126 @@ class Instructions_API:
                 links_full.append(f"Ссылка не загрузилась: {urls}")
                 continue
                 
-
+        links_full = list(dict.fromkeys(links_full))
         return links_full
+    
+    # ловим поток
+    @browser
+    def flow_download(self, page, resource, name):
+        users_files = Path(__file__).parent / "users_file"
+        users_files.mkdir(parents=True, exist_ok=True)
+
+        def on_response(response):
+            content_type = (response.headers.get("content-type") or "").lower()
+            url = response.url.lower()
+            
+            # фильтруем по типу контента
+            media_types = (
+                "application/json",
+                "audio/",
+                "video/",
+                "mpeg",
+                "mp3",
+                "mp4",
+                "ogg",
+                "webm",
+                "wav",
+                "aac",
+                "flac",
+                "m3u8",
+                "mpegurl"
+            )
+            
+            #
+            if not any(mt in content_type for mt in media_types):
+                return
+
+            try:
+                body = response.body()
+            except TargetClosedError:
+                return
+            except Exception as e:
+                print("ошибка")
+                return
+
+            # определяем расширение файла
+            if "json" in content_type:
+                ext = "json"
+            elif "m3u8" in url or "mpegurl" in content_type:
+                ext = "m3u8"
+            elif "audio" in content_type:
+                ext = content_type.split("/")[-1].split(";")[0]
+            elif "video" in content_type:
+                ext = content_type.split("/")[-1].split(";")[0]
+            else:
+                ext = "bin"
+
+            # потоковые фрагементы
+            if (
+                ".m3u8" in url
+                or "application/x-mpegurl" in content_type
+                or "application/vnd.apple.mpegurl" in content_type
+                or "video/mp2t" in content_type
+                or url.endswith(".ts")
+                ):
+                flow = "hls"
+            else:
+                flow = "progressiv"
+
+            #имя файла
+            name_file = re.sub(r"[^0-9a-zA-Z._-]", "_", url.split("?")[0].split("/")[-1])[:150]
+            if not name_file.endswith(f".{ext}"):
+                name_file += f".{ext}"
+
+            # сохраняем файл
+            jsonfile = users_files / name / name_file
+            print(jsonfile)
+            with open(jsonfile, "wb") as f:
+                f.write(body)
+                
+            if ext == "json":
+                try:
+                    data = json.loads(body.decode("utf-8"))
+                    # пытаемся найти url на m3u8 где угодно
+                    text = json.dumps(data)
+                    match = re.search(r"https?://[^\s\"']+\.m3u8", text)
+                    if match:
+                        m3u8_url = match.group(0)
+                        out_path = jsonfile.with_suffix(".mp3")
+
+                        # определяем, видео это или аудио
+                        is_video = any(x in m3u8_url for x in ("video", "mp4", "720", "1080", "res", "hlsv"))
+                        out_path = jsonfile.with_suffix(".mp4" if is_video else ".mp3")
+
+                        # запускаем ffmpeg для скачивания и конвертации
+                        subprocess.run([
+                            "ffmpeg",
+                            "-protocol_whitelist", "file,http,https,tcp,tls",
+                            "-y",
+                            "-i", m3u8_url,
+                            "-c", "copy",
+                            str(out_path)
+                        ], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                except Exception as e:
+                    pass
+                    
+            elif flow == "hls" and jsonfile.suffix == ".m3u8":
+
+                # определяем, это видео или аудио
+                is_video = any(x in content_type for x in ("video", "mp4", "mpeg"))
+                out_path = jsonfile.with_suffix(".mp4" if is_video else ".mp3")
+
+                # запускаем ffmpeg для скачивания и конвертации
+                subprocess.run([
+                    "ffmpeg",
+                    "-protocol_whitelist", "file,http,https,tcp,tls",
+                    "-y",
+                    "-i", str(jsonfile),
+                    "-c", "copy",
+                    str(out_path)
+                ], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        
+        # ловим ответы
+        page.on("response", on_response)
+        page.goto(resource, wait_until="domcontentloaded")
+        page.wait_for_timeout(25000)
