@@ -41,3 +41,6 @@
 
 ```
 gh repo clone 1K0T1/site_analysis_for_api
+
+git clone https://github.com/1K0T1/site_analysis_for_api.git
+
