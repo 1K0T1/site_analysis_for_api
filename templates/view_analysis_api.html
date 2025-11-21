@@ -39,10 +39,10 @@
         <form class="copy">
             <button onclick="copyCode()">Копировать</button>
         </form>
-        <form class="media_download">
+        <form id="media_download" class="media_download">
             <button type="submit">Скачать все медиа</button>
         </form>
-        <form class="flow_view" action="/view_analysis_api/flow_view">
+        <form id="flow_view" class="flow_view">
             <button type="submit">Поймать поток json/медиа</button>
         </form>
         <select class="listfile" id="fileList" name="buttonurl" size="16">
@@ -55,10 +55,12 @@
     <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script src="{{ url_for('static', filename='viewfile.js') }}"></script>
-    <script scr="{{ url_for('static', filename='updatecode.js') }}"></script>
+    <script src="{{ url_for('static', filename='updatecode.js') }}"></script>
     <script src="{{ url_for('static', filename='check_file.js') }}"></script>
     <script src="{{ url_for('static', filename='check_all_file.js') }}"></script>
     <script src="{{ url_for('static', filename='post_code.js') }}"></script>
+    <script src="{{ url_for('static', filename='check_flow.js') }}"></script>
+    <script src="{{ url_for('static', filename='check_media.js') }}"></script>
 </body>
 
 </html>

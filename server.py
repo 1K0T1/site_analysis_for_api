@@ -28,7 +28,8 @@ from gmail_restore import Restore_account
 from data_sql import Data_base
 from create_instructions_and_API import Instructions_API
 from fileopen import Open_List, Open_File, Download_File, Download_All, AiGenerate
-#from AI_analysis import AI_Analysis_Links
+
+# from AI_analysis import AI_Analysis_Links
 
 env_key = Path(__file__).parent / "key" / ".env"
 
@@ -155,6 +156,7 @@ def restore_password(token):
 def run_creature_api(link, name):
     Instructions_API().open_resource(link, name)
 
+
 @app.route("/view_analysis_api", methods=["GET", "POST", "DELETE"])
 def view_analysis_api():
     name = session.get("name")
@@ -204,6 +206,7 @@ def download_js():
 def run_download(link, name):
     Download_File().link_download(link, name)
 
+
 @app.route("/view_analysis_api/link", methods=["GET", "POST"])
 def download_links():
     name = session.get("name")
@@ -233,7 +236,8 @@ def loading_list():
 # пользователь скачивает все файлы
 def run_load_all_file(name):
     Download_All().download_all_file(name)
-    
+
+
 @app.route("/view_analysis_api/allfiles", methods=["GET", "POST"])
 def download_all_file():
     name = session.get("name")
@@ -258,11 +262,27 @@ def loading_all_file():
     path = Download_All().load_all_files(name)
     return send_file(path, as_attachment=True)
 
+
 # скачать медиа если это доступно
+def run_load_media(link, name):
+    Instructions_API().open_media(link, name)
+
+
+@app.route("/media_download")
+def route_media_load():
+    name = session.get("name")
+    link = Data_base().open_url(name)[0]
+    p = Process(target=run_load_media, args=(link, name))
+    p.start()
+    if link is None:
+        return jsonify({"status": False})
+    return jsonify({"status": True})
+
 
 # поймать поток если это доступно
 def run_flow_view(name, link):
     Instructions_API().flow_download(link, name)
+
 
 @app.route("/view_analysis_api/flow_view")
 def route_flow_view():
@@ -274,10 +294,12 @@ def route_flow_view():
         return jsonify({"status": False})
     return jsonify({"status": True})
 
+
 # анализ с помощью AI
 def ai_generate(name, links):
     urls = AiGenerate().sort_links(name, links)
     return urls
+
 
 @app.route("/view_analysis_api/generate/analysis", methods=["GET", "POST"])
 def route_to_ai():
@@ -292,6 +314,4 @@ def route_to_ai():
 if __name__ == "__main__":
     cert_path = Path(__file__).parent / "pem" / r"localhost+2.pem"
     key_path = Path(__file__).parent / "pem" / r"localhost+2-key.pem"
-    socketio.run(
-        app, debug=True, ssl_context=(cert_path, key_path)
-    )
+    socketio.run(app, debug=True, ssl_context=(cert_path, key_path))

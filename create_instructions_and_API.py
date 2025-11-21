@@ -7,6 +7,7 @@ import json
 import subprocess
 import re
 import shutil
+from uuid import uuid4
 from urllib.parse import urljoin, urlparse
 
 
@@ -25,8 +26,13 @@ def browser(func):
             )
             context = browser.new_context(
                 user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0 Safari/537.36",
-                permissions=["microphone", "camera", "clipboard-read", "clipboard-write"],
-                )
+                permissions=[
+                    "microphone",
+                    "camera",
+                    "clipboard-read",
+                    "clipboard-write",
+                ],
+            )
             page = context.new_page()
             result = func(self, page, *args, **kwargs)
             try:
@@ -38,10 +44,11 @@ def browser(func):
 
 
 class Instructions_API:
-    # парсим код
+
+    # парсим код (html, js)
     @browser
-    def open_resource(self, page, resource, filename):
-        users_files = Path(__file__).parent / "users_file" / filename
+    def open_resource(self, page, resource, name):
+        users_files = Path(__file__).parent / "users_file" / name
         if users_files.is_dir():
             shutil.rmtree(users_files)
         users_files.mkdir(parents=True, exist_ok=True)
@@ -138,8 +145,8 @@ class Instructions_API:
 
     # сохраняем в txt все ссылки
     @browser
-    def all_links(self, page, resource, filename):
-        users_files = Path(__file__).parent / "users_file" / filename
+    def all_links(self, page, resource, name):
+        users_files = Path(__file__).parent / "users_file" / name
         users_files.mkdir(parents=True, exist_ok=True)
         page.goto(resource, wait_until="domcontentloaded", timeout=60000)
         page.wait_for_timeout(9000)
@@ -204,15 +211,15 @@ class Instructions_API:
                     for tag in a_tags + link_tags
                     if tag.get_attribute("href")
                 ]
-                
+
                 links_full.extend(content_hrefs)
             except PlaywrightTimeoutError:
                 links_full.append(f"Ссылка не загрузилась: {urls}")
                 continue
-                
+
         links_full = list(dict.fromkeys(links_full))
         return links_full
-    
+
     # ловим поток
     @browser
     def flow_download(self, page, resource, name):
@@ -222,12 +229,13 @@ class Instructions_API:
         def on_response(response):
             content_type = (response.headers.get("content-type") or "").lower()
             url = response.url.lower()
-            
+
             # фильтруем по типу контента
             media_types = (
                 "application/json",
                 "audio/",
                 "video/",
+                "img/",
                 "mpeg",
                 "mp3",
                 "mp4",
@@ -237,9 +245,13 @@ class Instructions_API:
                 "aac",
                 "flac",
                 "m3u8",
-                "mpegurl"
+                "mpegurl",
+                "png",
+                "ico",
+                "jpg",
+                "img",
             )
-            
+
             #
             if not any(mt in content_type for mt in media_types):
                 return
@@ -261,6 +273,8 @@ class Instructions_API:
                 ext = content_type.split("/")[-1].split(";")[0]
             elif "video" in content_type:
                 ext = content_type.split("/")[-1].split(";")[0]
+            elif "img" in content_type:
+                ext = content_type.split("/")[-1].split(";")[0]
             else:
                 ext = "bin"
 
@@ -271,13 +285,15 @@ class Instructions_API:
                 or "application/vnd.apple.mpegurl" in content_type
                 or "video/mp2t" in content_type
                 or url.endswith(".ts")
-                ):
+            ):
                 flow = "hls"
             else:
                 flow = "progressiv"
 
-            #имя файла
-            name_file = re.sub(r"[^0-9a-zA-Z._-]", "_", url.split("?")[0].split("/")[-1])[:150]
+            # имя файла
+            name_file = re.sub(
+                r"[^0-9a-zA-Z._-]", "_", url.split("?")[0].split("/")[-1]
+            )[:150]
             if not name_file.endswith(f".{ext}"):
                 name_file += f".{ext}"
 
@@ -286,7 +302,7 @@ class Instructions_API:
             print(jsonfile)
             with open(jsonfile, "wb") as f:
                 f.write(body)
-                
+
             if ext == "json":
                 try:
                     data = json.loads(body.decode("utf-8"))
@@ -298,21 +314,31 @@ class Instructions_API:
                         out_path = jsonfile.with_suffix(".mp3")
 
                         # определяем, видео это или аудио
-                        is_video = any(x in m3u8_url for x in ("video", "mp4", "720", "1080", "res", "hlsv"))
+                        is_video = any(
+                            x in m3u8_url
+                            for x in ("video", "mp4", "720", "1080", "res", "hlsv")
+                        )
                         out_path = jsonfile.with_suffix(".mp4" if is_video else ".mp3")
 
                         # запускаем ffmpeg для скачивания и конвертации
-                        subprocess.run([
-                            "ffmpeg",
-                            "-protocol_whitelist", "file,http,https,tcp,tls",
-                            "-y",
-                            "-i", m3u8_url,
-                            "-c", "copy",
-                            str(out_path)
-                        ], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                        subprocess.run(
+                            [
+                                "ffmpeg",
+                                "-protocol_whitelist",
+                                "file,http,https,tcp,tls",
+                                "-y",
+                                "-i",
+                                m3u8_url,
+                                "-c",
+                                "copy",
+                                str(out_path),
+                            ],
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE,
+                        )
                 except Exception as e:
                     pass
-                    
+
             elif flow == "hls" and jsonfile.suffix == ".m3u8":
 
                 # определяем, это видео или аудио
@@ -320,16 +346,117 @@ class Instructions_API:
                 out_path = jsonfile.with_suffix(".mp4" if is_video else ".mp3")
 
                 # запускаем ffmpeg для скачивания и конвертации
-                subprocess.run([
-                    "ffmpeg",
-                    "-protocol_whitelist", "file,http,https,tcp,tls",
-                    "-y",
-                    "-i", str(jsonfile),
-                    "-c", "copy",
-                    str(out_path)
-                ], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        
+                subprocess.run(
+                    [
+                        "ffmpeg",
+                        "-protocol_whitelist",
+                        "file,http,https,tcp,tls",
+                        "-y",
+                        "-i",
+                        str(jsonfile),
+                        "-c",
+                        "copy",
+                        str(out_path),
+                    ],
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                )
+
         # ловим ответы
         page.on("response", on_response)
         page.goto(resource, wait_until="domcontentloaded")
         page.wait_for_timeout(25000)
+
+    # медиа
+    @browser
+    def open_media(self, page, resource, name):
+        users_files = Path(__file__).parent / "users_file" / name
+        file_name = uuid4().hex
+
+        page.goto(resource, wait_until="domcontentloaded", timeout=60000)
+        page.wait_for_timeout(3000)
+
+        # видео
+        videos = page.query_selector_all("video")
+        for idx, v in enumerate(videos, 1):
+            video_data, video_type = page.evaluate(
+                """
+            async (video) => {
+                const src = video.src || video.querySelector('source')?.src;
+                if (!src) return [null, null];
+                const blob = await fetch(src).then(r => r.blob());
+                const buf = await blob.arrayBuffer();
+                return [Array.from(new Uint8Array(buf)), blob.type];
+            }
+            """,
+                v,
+            )
+            if video_data:
+                ext = video_type.split("/")[-1] if video_type else "mp4"
+                file_name = f"video_{uuid4().hex}.{ext}"
+                with open(users_files / file_name, "wb") as f:
+                    f.write(bytes(video_data))
+                print("Сохранено видео:", file_name)
+
+        # картинки
+        imgs = page.query_selector_all("img")
+        for idx, img in enumerate(imgs, 1):
+            img_data, img_type = page.evaluate(
+                """
+            async (img) => {
+                const src = img.src;
+                if (!src) return [null, null];
+                const blob = await fetch(src).then(r => r.blob());
+                const buf = await blob.arrayBuffer();
+                return [Array.from(new Uint8Array(buf)), blob.type];
+            }
+            """,
+                img,
+            )
+            if img_data:
+                ext = img_type.split("/")[-1] if img_type else "png"
+                file_name = f"image_{uuid4().hex}.{ext}"
+                with open(users_files / file_name, "wb") as f:
+                    f.write(bytes(img_data))
+                print("Сохранено изображение:", file_name)
+
+        prefix = ["/popular-in"]
+        match = re.search(r"https?://([^/]+)/?", page.url)
+        base_domain = match.group(1) if match else ""
+        links = page.query_selector_all("a")
+
+        for link in links:
+            href = link.get_attribute("href")
+            if not href:
+                continue
+            blocked = any(re.search(p, href) for p in prefix)
+            if blocked:
+                continue
+            full_url = urljoin(page.url, href)
+            if base_domain not in full_url:
+                continue
+
+            if any(
+                full_url.lower().endswith(ext)
+                for ext in (
+                    ".jpg",
+                    ".jpeg",
+                    ".png",
+                    ".gif",
+                    ".webp",
+                    ".svg",
+                    ".mp4",
+                    ".webm",
+                    ".mkv",
+                    ".ogg",
+                    ".mov",
+                )
+            ):
+                try:
+                    data = requests.get(full_url).content
+                    filename = full_url.split("/")[-1] or f"media_{uuid4().hex}"
+                    with open(users_files / filename, "wb") as f:
+                        f.write(data)
+                    print("Сохранено файл из ссылки:", filename)
+                except Exception as e:
+                    print("Ошибка при скачивании", full_url, e)

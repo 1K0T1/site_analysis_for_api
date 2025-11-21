@@ -11,4 +11,7 @@ users_file/
 
 #тесты
 test.py
+tests.py
 test.txt
+
+__init__.py
