@@ -3,6 +3,8 @@ import asyncio
 from time import time, ctime
 from pathlib import Path
 import logging
+import base64
+import mimetypes
 from multiprocessing import Process
 
 from flask import (
@@ -183,7 +185,18 @@ def get_files():
 def view_file(filename):
     name = session.get("name")
     open_file = Open_File().view_file(name, filename)
-    emit("file_chosen", {"fileMessage": open_file})
+    if isinstance(open_file, Path):
+
+        file_byte = open_file.read_bytes()
+        encoded = base64.b64encode(file_byte)
+        encoded_str = encoded.decode("utf-8")
+
+        mime_type, _ = mimetypes.guess_type(open_file.name)
+        data_url = f"data:{mime_type};base64,{encoded_str}"
+
+        emit("file_chosen", {"fileMessage": data_url})
+    else:
+        emit("file_chosen", {"fileMessage": open_file})
 
 
 # пользователь скачивает html файлы

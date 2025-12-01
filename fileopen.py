@@ -20,12 +20,60 @@ class Open_List:
 
 # показать содержимое файла
 class Open_File:
-    def view_file(self, name, name_file):
+    def view_file(self, name, filename):
         users_files = Path(__file__).parent / "users_file" / name
         users_files.mkdir(parents=True, exist_ok=True)
-        full_path = users_files / name_file
-        file_view = full_path.read_text(encoding="utf-8", errors="raplace")
-        return file_view
+        full_path = users_files / filename
+
+        text_suffix = [
+            ".txt",
+            ".py",
+            ".json",
+            ".js",
+            ".mjs",
+            ".html",
+            ".htm",
+            ".css",
+            ".csv",
+            ".md",
+            ".com",
+            ".m3u8",
+            ".c",
+            ".cpp",
+            ".php",
+            ".jsx",
+            ".tsx",
+            ".svelte",
+            ".vue",
+        ]
+
+        media_suffix = [
+            ".mpeg",
+            ".png",
+            ".jpg",
+            ".jpeg",
+            ".webm",
+            ".webp",
+            ".mp3",
+            ".wav",
+            ".ogg",
+            ".aac",
+            ".mp4",
+            ".ico",
+            ".gif",
+            ".avif",
+            ".svg",
+            ".bmp",
+            ".ogv",
+        ]
+
+        if full_path.suffix.lower() in text_suffix:
+            file_view = full_path.read_text(encoding="utf-8", errors="replace")
+            return file_view
+        elif full_path.suffix.lower() in media_suffix:
+            return full_path
+        else:
+            return "Этот файл нельзя прочитать :/"
 
 
 # создание zip
