@@ -6,6 +6,7 @@ import logging
 import base64
 import mimetypes
 from multiprocessing import Process
+import sys
 
 from flask import (
     Flask,  # основной класс приложения
@@ -24,12 +25,14 @@ from flask import (
 from flask_socketio import SocketIO, emit
 from argon2 import PasswordHasher, exceptions
 from dotenv import load_dotenv  # для токенов
+from loguru import logger
 
 # отдельные функции
 from gmail_restore import Restore_account
 from data_sql import Data_base
 from create_instructions_and_API import Instructions_API
 from fileopen import Open_List, Open_File, Download_File, Download_All, AiGenerate
+from log.log import log_server
 
 # from AI_analysis import AI_Analysis_Links
 
@@ -42,9 +45,11 @@ app.secret_key = os.getenv("SECRET_KEY")
 socketio = SocketIO(app, manage_session=False, async_mode="threading")
 ph = PasswordHasher()
 
+log_server()
+
 # убераем логирование socketio и engineio
-logging.getLogger("engineio").setLevel(logging.ERROR)
-logging.getLogger("socketio").setLevel(logging.ERROR)
+# logging.getLogger("engineio").setLevel(logging.ERROR)
+# logging.getLogger("socketio").setLevel(logging.ERROR)
 
 
 # рендер 1 страницы
@@ -67,7 +72,6 @@ def register():
         password = request.form.get("password")
         hash_password = ph.hash(password)  # хешируем пароль
         email = request.form.get("email")
-    print(f"Регистр{login, hash_password , email}")
 
     # если введен логин пароль и эмайл
     if login and password and email:
@@ -76,12 +80,13 @@ def register():
         # проверка на такой же логин и почту в бд
         if regis is not None:
             if login == regis[0] or email == regis[2]:
-                print("Такой пользователь уже есть")
-                answer = "Такой пользователь уже есть"
+                logger.info("There is already such a user.")
+                answer = "There is already such a user."
         else:
             Data_base().add_users(login, hash_password, email, data_time)
-            print("Зарегистрирован")
-            answer = "Вы зарегистрированы"
+            logger.info("Registered")
+            answer = "You are registered"
+            logger.info(f"Registration: {login}, {hash_password}, {email}")
     return render_template(
         "register.html", name=login, password=password, email=email, message=answer
     )
@@ -96,25 +101,25 @@ def login():
     if request.method == "POST":
         name = request.form.get("username")
         password = request.form.get("password")
-    print(f"Вход{name, password}")
     # если пароль и логин введены
     if name and password:
         pas = Data_base().login(name)
-        print(pas)
+        logger.info(f"Entry: {name, password}")
+        logger.info(f"Output: {pas}")
         # проверка если пароль и логин введены правильно
         try:
             if pas is not None:
                 passwords = pas[0]
                 if ph.verify(passwords, password):
-                    print(f"Авторизация")
-                    answer = "Вы авторизированы"
+                    logger.info("Authorization")
+                    answer = "Authorization"
                     session["name"] = name
                     return redirect(url_for("view_analysis_api", username=name))
             else:
-                print("Не авторизация")
-                answer = "Вы не авторизированы"
+                logger.info("Not authorization")
+                answer = "Not authorization"
         except exceptions.VerificationError:
-            answer = "Не верный пароль"
+            answer = "Not verification"
     return render_template("login.html", name=name, password=password, message=answer)
 
 
@@ -125,13 +130,16 @@ def restore_gmail():
     if request.method == "POST":
         email = request.form.get("email")
         if not email:
-            print("Почта не введена")
+            logger.info("Not entered email")
         else:
             token = Data_base().restore_gmail(email)
             reset_link = url_for("restore_password", token=token, _external=True)
             # отправка на почту
             send_to_gmail = Restore_account(email, reset_link)
             send_to_gmail.restore_password()
+
+            logger.success("<green>Post email</green>")
+            logger.info(f"Email: {email}")
     return render_template("restore_gmail.html", email=email)
 
 
@@ -144,11 +152,10 @@ def restore_password(token):
     if request.method == "POST":
         password1 = request.form.get("password1")
         password2 = request.form.get("password2")
-        print(f"Пароль 1: {password1} \nПароль 2: {password2}")
         if password1 == password2:
             hash_password = ph.hash(password1)
             tok = Data_base().restore_password(token, hash_password)
-            print(tok)
+            logger.info(f"Tok {tok}")
     return render_template(
         "restore_password.html", password1=password1, password2=password2, token=token
     )
@@ -195,6 +202,8 @@ def view_file(filename):
         data_url = f"data:{mime_type};base64,{encoded_str}"
 
         emit("file_chosen", {"fileMessage": data_url})
+
+        logger.success("The contents of the file are displayed")
     else:
         emit("file_chosen", {"fileMessage": open_file})
 
@@ -204,6 +213,8 @@ def view_file(filename):
 def download_html():
     name = session.get("name")
     path = Download_File().html_download(name)
+
+    logger.success(f"Download: {path}")
     return send_file(path, as_attachment=True)
 
 
@@ -212,6 +223,8 @@ def download_html():
 def download_js():
     name = session.get("name")
     path = Download_File().js_download(name)
+
+    logger.success(f"Download: {path}")
     return send_file(path, as_attachment=True)
 
 
@@ -243,6 +256,8 @@ def check_file():
 def loading_list():
     name = session.get("name")
     path = Download_File().loading_link(name)
+
+    logger.success(f"Download: {path}")
     return send_file(path, as_attachment=True)
 
 
@@ -273,6 +288,8 @@ def check_all_file():
 def loading_all_file():
     name = session.get("name")
     path = Download_All().load_all_files(name)
+
+    logger.success(f"Download: {path}")
     return send_file(path, as_attachment=True)
 
 
@@ -327,4 +344,6 @@ def route_to_ai():
 if __name__ == "__main__":
     cert_path = Path(__file__).parent / "pem" / r"localhost+2.pem"
     key_path = Path(__file__).parent / "pem" / r"localhost+2-key.pem"
-    socketio.run(app, debug=True, ssl_context=(cert_path, key_path))
+    socketio.run(
+        app, debug=False, use_reloader=False, ssl_context=(cert_path, key_path)
+    )

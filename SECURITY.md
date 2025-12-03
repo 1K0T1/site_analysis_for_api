@@ -3,11 +3,11 @@
 ## Supported Versions
 
 | Version | Supported         |
-| ------- | ----------------- |
-| 0.5.x   |  ✅              |
-| 0.4.x   |  ⚠️              |
-| 0.3.x   | ❌               |
+| ------- | ----------------  |
+| 1.0.x   |   ✅             |
+| 0.5.x   |   ⚠️             |
+| 0.1.x   |   ❌             |
 
 ## Reporting a Vulnerability
 
-Рекомендуется использовать последнюю стабильную версию Secret для максимальной безопасности и совместимости.
+It is recommended to use the latest stable version of Secret for maximum security and compatibility.

@@ -13,5 +13,6 @@ users_file/
 test.py
 tests.py
 test.txt
+server.log
 
 __init__.py

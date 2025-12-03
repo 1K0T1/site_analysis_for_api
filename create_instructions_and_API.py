@@ -1,14 +1,18 @@
-from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeoutError
-from playwright._impl._errors import TargetClosedError
 import requests
-from urllib.parse import urljoin
 from pathlib import Path
 import json
 import subprocess
 import re
 import shutil
 from uuid import uuid4
+
+from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeoutError
+from playwright._impl._errors import TargetClosedError
 from urllib.parse import urljoin, urlparse
+from urllib.parse import urljoin
+from loguru import logger
+
+from log.log import log_server
 
 
 # что бы автоматом открывать и зыкрывать бразуер
@@ -94,7 +98,8 @@ class Instructions_API:
             if template in templates:
                 continue
 
-            print(full_url)
+            logger.info(f"User: {name}")
+            logger.info(f"Full url: {full_url}")
             templates.add(template)
             prefix.append(full_url)
             links_a.append(full_url)
@@ -128,7 +133,7 @@ class Instructions_API:
             try:
                 r = requests.get(full_url, timeout=15)
             except Exception as e:
-                print(f"Пропускаем { full_url}\n{e}")
+                logger.warning(f"Пропускаем {full_url}\n{e}")
             name = Path(src).name
 
             try:
@@ -193,7 +198,8 @@ class Instructions_API:
             if template in templates:
                 continue
 
-            print(full_url)
+            logger.info(f"User: {name}")
+            logger.info(f"Full url: {full_url}")
             templates.add(template)
             links_a.append(full_url)
             hrefs.add(full_url)
@@ -261,7 +267,7 @@ class Instructions_API:
             except TargetClosedError:
                 return
             except Exception as e:
-                print("ошибка")
+                logger.error(f"<red>Error</red>: {e}")
                 return
 
             # определяем расширение файла
@@ -299,7 +305,8 @@ class Instructions_API:
 
             # сохраняем файл
             jsonfile = users_files / name / name_file
-            print(jsonfile)
+            logger.info(f"User: {name}")
+            logger.info(f"JSON: {jsonfile}")
             with open(jsonfile, "wb") as f:
                 f.write(body)
 
@@ -396,7 +403,8 @@ class Instructions_API:
                 file_name = f"video_{uuid4().hex}.{ext}"
                 with open(users_files / file_name, "wb") as f:
                     f.write(bytes(video_data))
-                print("Сохранено видео:", file_name)
+                logger.info(f"User: {name}")
+                logger.success(f"Save file: {file_name}")
 
         # картинки
         imgs = page.query_selector_all("img")
@@ -418,7 +426,7 @@ class Instructions_API:
                 file_name = f"image_{uuid4().hex}.{ext}"
                 with open(users_files / file_name, "wb") as f:
                     f.write(bytes(img_data))
-                print("Сохранено изображение:", file_name)
+                logger.success(f"Save file: {file_name}")
 
         prefix = ["/popular-in"]
         match = re.search(r"https?://([^/]+)/?", page.url)
@@ -452,11 +460,12 @@ class Instructions_API:
                     ".mov",
                 )
             ):
+                logger.info(f"User: {name}")
                 try:
                     data = requests.get(full_url).content
                     filename = full_url.split("/")[-1] or f"media_{uuid4().hex}"
                     with open(users_files / filename, "wb") as f:
                         f.write(data)
-                    print("Сохранено файл из ссылки:", filename)
+                    logger.success(f"Save file: {filename}")
                 except Exception as e:
-                    print("Ошибка при скачивании", full_url, e)
+                    logger.error(f"<red>Error</red>: {full_url}\n {e}")

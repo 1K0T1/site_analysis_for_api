@@ -93,7 +93,6 @@ class Download_File:
         with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
             for file in users_files.glob("*.html"):
                 zipf.write(file, arcname=file.name)
-        print(f"Архив создан {zip_path}")
         return zip_path
 
     # создание zip js
@@ -110,7 +109,6 @@ class Download_File:
         with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
             for file in users_files.glob("*.js"):
                 zipf.write(file, arcname=file.name)
-        print(f"Архив создан {zip_path}")
         return zip_path
 
     # создание txt links
