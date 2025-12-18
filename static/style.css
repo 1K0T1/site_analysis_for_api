@@ -409,7 +409,7 @@ main.view_analysis_api .filejs {
 main.view_analysis_api .listfile {
   display: grid;
   grid-column: 1;
-  grid-row: 5 / 6;
+  grid-row: 6 / 7;
   background: #cbc6c6;
   cursor: help;
   transition: 0.4s;
@@ -489,10 +489,24 @@ main.view_analysis_api .media_download {
   justify-self: left;
 }
 
+main.view_analysis_api .reverse_minification {
+  display: grid;
+  grid-column: 2;
+  grid-row: 5;
+  background: #bcc9e3;
+  border-radius: 9px;
+  padding: 2px 5px;
+  cursor: pointer;
+  transition: 0.4s;
+  width: 100%;
+  max-width: 180px;
+  justify-self: left;
+}
+
 main.view_analysis_api .viewcode {
   display: grid;
   grid-column: 2 / 6;
-  grid-row: 5 / 6;
+  grid-row: 6 / 7;
   font-size: 12px;
   max-width: 920px;
   max-height: 600px;

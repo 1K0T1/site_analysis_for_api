@@ -11,6 +11,7 @@ from playwright._impl._errors import TargetClosedError
 from urllib.parse import urljoin, urlparse
 from urllib.parse import urljoin
 from loguru import logger
+import jsbeautifier
 
 from log.log import log_server
 
@@ -205,6 +206,7 @@ class Instructions_API:
             hrefs.add(full_url)
             links_full.extend(links_a)
 
+        # обходим все ссылки и собираем внутренние
         for urls in links_a:
             try:
                 page.goto(urls, wait_until="domcontentloaded", timeout=60000)
@@ -258,7 +260,6 @@ class Instructions_API:
                 "img",
             )
 
-            #
             if not any(mt in content_type for mt in media_types):
                 return
 
@@ -469,3 +470,22 @@ class Instructions_API:
                     logger.success(f"Save file: {filename}")
                 except Exception as e:
                     logger.error(f"<red>Error</red>: {full_url}\n {e}")
+
+
+# decode files
+class Instructions_Code:
+    def decode_code(self, name, script):
+        file_path = Path(__file__).parent / "users_file" / name / script
+        file_name = file_path.name
+        file_without_ext = file_path.suffix
+
+        # decode js file
+        if file_without_ext == ".js":
+            with open(file_path, "r+", encoding="utf-8") as f:
+                js_code = f.read()
+                beautified = jsbeautifier.beautify(js_code)
+                f.seek(0)
+                f.write(beautified)
+                f.truncate()
+        else:
+            return None

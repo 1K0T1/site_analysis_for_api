@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="secret letter"> <!-- для поисковика -->
+    <meta name="description" content="secret letter">
     <title>Secret</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
@@ -16,11 +16,13 @@
     <main class="view_analysis_api">
         <strong class="name">{{message}}</strong>
         <strong class="loading" id="status">{{loading_message}}</strong>
+
         <form method="post" action="/view_analysis_api" class="postlink">
             <label>Введите ссылку</label>
             <input type="url" class="inputurl" name="buttonurl">
             <input type="submit" class="buttonurl">
         </form>
+
         <form class="list" id="download-list" action="/view_analysis_api/link">
             <button type="submit">Скачать список ссылок</button>
         </form>
@@ -45,9 +47,14 @@
         <form id="flow_view" class="flow_view">
             <button type="submit">Поймать поток json/медиа</button>
         </form>
+        <form id="reverse_minification" class="reverse_minification">
+            <button type="submit">Обратное минифицирование</button>
+        </form>
+
         <select class="listfile" id="fileList" name="buttonurl" size="16">
             <option disabled>Загрузка...</option>
         </select>
+
         <pre id="copy" class="viewcode">
             <code id="fileMessage"></code>
             <img id="img" style="display:none; max-width:300px;">
@@ -66,6 +73,7 @@
     <script src="{{ url_for('static', filename='check_flow.js') }}"></script>
     <script src="{{ url_for('static', filename='check_media.js') }}"></script>
     <script src="{{ url_for('static', filename='copycode.js') }}"> </script>
+    <script src="{{ url_for('static', filename='post_decode.js') }}"> </script>
 </body>
 
 </html>
