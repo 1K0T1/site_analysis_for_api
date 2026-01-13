@@ -340,6 +340,12 @@ def route_to_ai():
     return jsonify({"status": "started"})
 
 
+@app.errorhandler(404)
+def page_not_found(e):
+    logger.warning(f"404 Error Page Not Found {e}")
+    return render_template("404.html"), 404
+
+
 # лог и самоподписанный сертификат
 if __name__ == "__main__":
     cert_path = Path(__file__).parent / "pem" / r"localhost+2.pem"
