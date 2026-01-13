@@ -312,7 +312,7 @@ body.restore_gmail .item1:hover {
   background: #7ec9e3;
 }
 
-/*страница с парсингом*/
+/*main page*/
 main.view_analysis_api {
   display: grid;
   grid-template-columns: 1fr auto auto auto 1fr;
@@ -364,48 +364,6 @@ main.view_analysis_api .postlink .buttonurl {
   justify-self: center;
 }
 
-main.view_analysis_api .list {
-  display: grid;
-  grid-column: 2;
-  grid-row: 3;
-  background: #bcc9e3;
-  border-radius: 9px;
-  padding: 2px 5px;
-  cursor: pointer;
-  transition: 0.4s;
-  width: 100%;
-  max-width: 200px;
-  justify-self: left;
-}
-
-main.view_analysis_api .filehtml {
-  display: grid;
-  grid-column: 3;
-  grid-row: 3;
-  background: #bcc9e3;
-  border-radius: 9px;
-  padding: 2px 5px;
-  cursor: pointer;
-  transition: 0.4s;
-  width: 100%;
-  max-width: 200px;
-  justify-self: center;
-}
-
-main.view_analysis_api .filejs {
-  display: grid;
-  grid-column: 4;
-  grid-row: 3;
-  background: #bcc9e3;
-  border-radius: 9px;
-  padding: 2px 5px;
-  cursor: pointer;
-  transition: 0.4s;
-  width: 100%;
-  max-width: 200px;
-  justify-self: right;
-}
-
 main.view_analysis_api .listfile {
   display: grid;
   grid-column: 1;
@@ -419,88 +377,117 @@ main.view_analysis_api .listfile {
   transform-origin: right;
 }
 
-main.view_analysis_api .allfiles {
-  display: grid;
-  grid-column: 2;
-  grid-row: 4;
-  background: #bcc9e3;
-  border-radius: 9px;
-  padding: 2px 5px;
-  cursor: pointer;
-  transition: 0.4s;
-  width: 100%;
-  max-width: 200px;
-  justify-self: left;
+/* Контейнер карусели */
+main.view_analysis_api .carousel-container {
+    grid-column: 4;
+    grid-row: 4;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    max-width: 650px;
+    justify-self: center;
 }
 
-main.view_analysis_api .AIgenerate {
-  display: grid;
-  grid-column: 3;
-  grid-row: 4;
-  background: #bcc9e3;
-  border-radius: 9px;
-  padding: 2px 5px;
-  cursor: pointer;
-  transition: 0.4s;
-  width: 100%;
-  max-width: 200px;
-  justify-self: center;
+main.view_analysis_api .carousel {
+    display: flex;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    gap: 10px;
+    padding: 15px 0;
+    flex: 1;
+    
+    scrollbar-width: thin;
 }
 
-main.view_analysis_api .copy {
-  display: grid;
-  grid-column: 4;
-  grid-row: 4;
-  background: #bcc9e3;
-  border-radius: 9px;
-  padding: 2px 5px;
-  cursor: pointer;
-  transition: 0.4s;
-  width: 100%;
-  max-width: 200px;
-  justify-self: right;
+main.view_analysis_api .nav-button {
+    background: #34495e;
+    color: white;
+    border: none;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    z-index: 10;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    flex-shrink: 0;
+    transition: background 0.3s;
 }
 
-main.view_analysis_api .flow_view {
-  display: grid;
-  grid-column: 5;
-  grid-row: 4;
-  background: #bcc9e3;
-  border-radius: 9px;
-  padding: 2px 5px;
-  cursor: pointer;
-  transition: 0.4s;
-  width: 100%;
-  max-width: 180px;
-  justify-self: left;
+main.view_analysis_api .nav-button:hover {
+    background: #1abc9c;
 }
 
-main.view_analysis_api .media_download {
-  display: grid;
-  grid-column: 5;
-  grid-row: 3;
-  background: #bcc9e3;
-  border-radius: 9px;
-  padding: 2px 5px;
-  cursor: pointer;
-  transition: 0.4s;
-  width: 100%;
-  max-width: 180px;
-  justify-self: left;
+main.view_analysis_api .carousel form button {
+    min-width: 60px;
+    height: 60px;
+    background-color: #34495e;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-main.view_analysis_api .reverse_minification {
-  display: grid;
-  grid-column: 2;
-  grid-row: 5;
-  background: #bcc9e3;
-  border-radius: 9px;
-  padding: 2px 5px;
-  cursor: pointer;
-  transition: 0.4s;
-  width: 100%;
-  max-width: 180px;
-  justify-self: left;
+main.view_analysis_api .nav-button:hover {
+    background: #1abc9c;
+}
+
+main.view_analysis_api .carousel form button::before {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 115%;
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    white-space: nowrap;
+    background-color: #c0392b;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 13px;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    pointer-events: none;
+    z-index: 20;
+}
+
+main.view_analysis_api .carousel form button::after {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: #c0392b;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    pointer-events: none;
+}
+
+main.view_analysis_api .carousel form button:hover::before {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+}
+
+main.view_analysis_api .carousel form button:hover::after {
+    opacity: 1;
+    visibility: visible;
+}
+
+main.view_analysis_api .carousel::-webkit-scrollbar {
+    height: 4px;
+}
+main.view_analysis_api .carousel::-webkit-scrollbar-thumb {
+    background: #1abc9c;
+    border-radius: 10px;
 }
 
 main.view_analysis_api .viewcode {
