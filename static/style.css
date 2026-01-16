@@ -367,7 +367,7 @@ main.view_analysis_api .postlink .buttonurl {
 main.view_analysis_api .listfile {
   display: grid;
   grid-column: 1;
-  grid-row: 6 / 7;
+  grid-row: 4;
   background: #cbc6c6;
   cursor: help;
   transition: 0.4s;
@@ -377,123 +377,169 @@ main.view_analysis_api .listfile {
   transform-origin: right;
 }
 
-/* Контейнер карусели */
-main.view_analysis_api .carousel-container {
-    grid-column: 4;
-    grid-row: 4;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    width: 100%;
-    max-width: 650px;
-    justify-self: center;
+/* main container */
+.view_analysis_api {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: auto auto auto 1fr;
+  gap: 20px;
+  padding: 20px;
 }
 
-main.view_analysis_api .carousel {
-    display: flex;
-    overflow-x: auto;
-    scroll-behavior: smooth;
-    gap: 10px;
-    padding: 15px 0;
-    flex: 1;
-    
-    scrollbar-width: thin;
+.view_analysis_api .name {
+  grid-column: 1 / -1;
+  grid-row: 1;
 }
 
-main.view_analysis_api .nav-button {
-    background: #34495e;
-    color: white;
-    border: none;
-    width: 40px;
-    height: 40px;
-    cursor: pointer;
-    z-index: 10;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-    flex-shrink: 0;
-    transition: background 0.3s;
+.view_analysis_api .loading {
+  grid-column: 1 / -1;
+  grid-row: 2;
 }
 
-main.view_analysis_api .nav-button:hover {
-    background: #1abc9c;
+.view_analysis_api .postlink {
+  grid-column: 1 / -1;
+  grid-row: 3;
 }
 
-main.view_analysis_api .carousel form button {
-    min-width: 60px;
-    height: 60px;
-    background-color: #34495e;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.carousel-container {
+  grid-column: 3;
+  grid-row: 3;
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding-top: 40px;
+  min-height: 20px;
 }
 
-main.view_analysis_api .nav-button:hover {
-    background: #1abc9c;
+/* carousel */
+.carousel {
+  display: flex;
+  gap: 12px;
+  overflow: visible;
+  scroll-behavior: smooth;
+  padding: 0 50px;
+  flex: 1;
+  max-width: 100%;
+  position: relative;
 }
 
-main.view_analysis_api .carousel form button::before {
-    content: attr(data-tooltip);
-    position: absolute;
-    bottom: 115%;
-    left: 50%;
-    transform: translateX(-50%) translateY(10px);
-    white-space: nowrap;
-    background-color: #c0392b;
-    color: white;
-    padding: 6px 12px;
-    border-radius: 4px;
-    font-size: 13px;
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s ease;
-    pointer-events: none;
-    z-index: 20;
+.carousel form {
+  flex-shrink: 0;
+  display: none;
+  position: relative;
 }
 
-main.view_analysis_api .carousel form button::after {
-    content: '';
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    border: 6px solid transparent;
-    border-top-color: #c0392b;
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s ease;
-    pointer-events: none;
+.carousel form:nth-child(1),
+.carousel form:nth-child(2),
+.carousel form:nth-child(3),
+.carousel form:nth-child(4),
+.carousel form:nth-child(5),
+.carousel form:nth-child(6) {
+  display: block;
 }
 
-main.view_analysis_api .carousel form button:hover::before {
-    opacity: 1;
-    visibility: visible;
-    transform: translateX(-50%) translateY(0);
+.carousel button {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%);
+  cursor: pointer;
+  font-size: 24px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: visible;
 }
 
-main.view_analysis_api .carousel form button:hover::after {
-    opacity: 1;
-    visibility: visible;
+.carousel button:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+  border-color: #4CAF50;
+  background: linear-gradient(135deg, #ffffff 0%, #e8f5e9 100%);
 }
 
-main.view_analysis_api .carousel::-webkit-scrollbar {
-    height: 4px;
-}
-main.view_analysis_api .carousel::-webkit-scrollbar-thumb {
-    background: #1abc9c;
-    border-radius: 10px;
+.carousel button:active {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
+/* Tooltip */
+.carousel button::before {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 10px;
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  z-index: 9999;
+}
+
+.carousel button::after {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 2px;
+  border: 8px solid transparent;
+  border-top-color: rgba(0, 0, 0, 0.9);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 9999;
+}
+
+.carousel button:hover::before,
+.carousel button:hover::after {
+  opacity: 1;
+}
+
+.nav-button {
+  position: absolute;
+  top: calc(50% + 30px);
+  transform: translateY(-75%);
+  width: 35px;
+  height: 35px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 100;
+}
+
+.nav-button:hover {
+  background: rgba(0, 0, 0, 0.8);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.nav-button.right {
+  right: 5px;
+}
+
+.nav-button.left {
+  left: 5px;
+}
+
+/* display */
 main.view_analysis_api .viewcode {
   display: grid;
   grid-column: 2 / 6;
-  grid-row: 6 / 7;
+  grid-row: 4;
   font-size: 12px;
   max-width: 920px;
   max-height: 600px;
