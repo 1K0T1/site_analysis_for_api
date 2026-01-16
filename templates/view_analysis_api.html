@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="secret letter"> <!-- для поисковика -->
+    <meta name="description" content="secret letter">
     <title>Secret</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
@@ -16,38 +16,53 @@
     <main class="view_analysis_api">
         <strong class="name">{{message}}</strong>
         <strong class="loading" id="status">{{loading_message}}</strong>
+
         <form method="post" action="/view_analysis_api" class="postlink">
             <label>Введите ссылку</label>
             <input type="url" class="inputurl" name="buttonurl">
             <input type="submit" class="buttonurl">
         </form>
-        <form class="list" id="download-list" action="/view_analysis_api/link">
-            <button type="submit">Скачать список ссылок</button>
-        </form>
-        <form class="filehtml" action="/view_analysis_api/html">
-            <button type="submit">Скачать html файлы</button>
-        </form>
-        <form class="filejs" action="/view_analysis_api/js">
-            <button type="submit">Скачать js файлы</button>
-        </form>
-        <form class="allfiles" id="download-all-files">
-            <button type="submit">Скачать все файлы</button>
-        </form>
-        <form class="AIgenerate" action="/view_analysis_api/generate/analysis">
-            <button type="submit">Проанализировать файл (Ai)</button>
-        </form>
-        <form class="copy">
-            <button onclick="copyCode()">Копировать</button>
-        </form>
-        <form id="media_download" class="media_download">
-            <button type="submit">Скачать все медиа</button>
-        </form>
-        <form id="flow_view" class="flow_view">
-            <button type="submit">Поймать поток json/медиа</button>
-        </form>
+
+        <div class="carousel-container">
+            <button type="button" class="nav-button left" onclick="scrollCarousel(-1)">&#9664;</button>
+
+            <div class="carousel" id="Carousel">
+                <form class="list" id="download-list" action="/view_analysis_api/link">
+                    <button type="submit" data-tooltip="Скачать список ссылок">📎</button>
+                </form>
+                <form class="filehtml" action="/view_analysis_api/html">
+                    <button type="submit" data-tooltip="Скачать html файлы">🌐</button>
+                </form>
+                <form class="filejs" action="/view_analysis_api/js">
+                    <button type="submit" data-tooltip="Скачать js файлы">📜</button>
+                </form>
+                <form class="allfiles" id="download-all-files">
+                    <button type="submit" data-tooltip="Скачать все файлы">📦</button>
+                </form>
+                <form class="AIgenerate" action="/view_analysis_api/generate/analysis">
+                    <button type="submit" data-tooltip="Проанализировать файл (Ai)">🤖</button>
+                </form>
+                <form class="copy">
+                    <button type="button" onclick="copyCode()" data-tooltip="Копировать">📋</button>
+                </form>
+                <form id="media_download" class="media_download">
+                    <button type="submit" data-tooltip="Скачать все медиа">🖼️</button>
+                </form>
+                <form id="flow_view" class="flow_view">
+                    <button type="submit" data-tooltip="Поймать поток json/медиа">🌊</button>
+                </form>
+                <form id="reverse_minification" class="reverse_minification">
+                    <button type="submit" data-tooltip="Обратное минифицирование">🛠️</button>
+                </form>
+            </div>
+
+            <button type="button" class="nav-button right" onclick="scrollCarousel(1)">&#9654;</button>
+        </div>
+
         <select class="listfile" id="fileList" name="buttonurl" size="16">
             <option disabled>Загрузка...</option>
         </select>
+
         <pre id="copy" class="viewcode">
             <code id="fileMessage"></code>
             <img id="img" style="display:none; max-width:300px;">
@@ -66,6 +81,8 @@
     <script src="{{ url_for('static', filename='check_flow.js') }}"></script>
     <script src="{{ url_for('static', filename='check_media.js') }}"></script>
     <script src="{{ url_for('static', filename='copycode.js') }}"> </script>
+    <script src="{{ url_for('static', filename='post_decode.js') }}"> </script>
+    <script src="{{ url_for('static', filename='scrollCarousel.js') }}"> </script>
 </body>
 
 </html>

@@ -312,7 +312,7 @@ body.restore_gmail .item1:hover {
   background: #7ec9e3;
 }
 
-/*страница с парсингом*/
+/*main page*/
 main.view_analysis_api {
   display: grid;
   grid-template-columns: 1fr auto auto auto 1fr;
@@ -364,52 +364,10 @@ main.view_analysis_api .postlink .buttonurl {
   justify-self: center;
 }
 
-main.view_analysis_api .list {
-  display: grid;
-  grid-column: 2;
-  grid-row: 3;
-  background: #bcc9e3;
-  border-radius: 9px;
-  padding: 2px 5px;
-  cursor: pointer;
-  transition: 0.4s;
-  width: 100%;
-  max-width: 200px;
-  justify-self: left;
-}
-
-main.view_analysis_api .filehtml {
-  display: grid;
-  grid-column: 3;
-  grid-row: 3;
-  background: #bcc9e3;
-  border-radius: 9px;
-  padding: 2px 5px;
-  cursor: pointer;
-  transition: 0.4s;
-  width: 100%;
-  max-width: 200px;
-  justify-self: center;
-}
-
-main.view_analysis_api .filejs {
-  display: grid;
-  grid-column: 4;
-  grid-row: 3;
-  background: #bcc9e3;
-  border-radius: 9px;
-  padding: 2px 5px;
-  cursor: pointer;
-  transition: 0.4s;
-  width: 100%;
-  max-width: 200px;
-  justify-self: right;
-}
-
 main.view_analysis_api .listfile {
   display: grid;
   grid-column: 1;
-  grid-row: 5 / 6;
+  grid-row: 4;
   background: #cbc6c6;
   cursor: help;
   transition: 0.4s;
@@ -419,80 +377,169 @@ main.view_analysis_api .listfile {
   transform-origin: right;
 }
 
-main.view_analysis_api .allfiles {
+/* main container */
+.view_analysis_api {
   display: grid;
-  grid-column: 2;
-  grid-row: 4;
-  background: #bcc9e3;
-  border-radius: 9px;
-  padding: 2px 5px;
-  cursor: pointer;
-  transition: 0.4s;
-  width: 100%;
-  max-width: 200px;
-  justify-self: left;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: auto auto auto 1fr;
+  gap: 20px;
+  padding: 20px;
 }
 
-main.view_analysis_api .AIgenerate {
-  display: grid;
-  grid-column: 3;
-  grid-row: 4;
-  background: #bcc9e3;
-  border-radius: 9px;
-  padding: 2px 5px;
-  cursor: pointer;
-  transition: 0.4s;
-  width: 100%;
-  max-width: 200px;
-  justify-self: center;
+.view_analysis_api .name {
+  grid-column: 1 / -1;
+  grid-row: 1;
 }
 
-main.view_analysis_api .copy {
-  display: grid;
-  grid-column: 4;
-  grid-row: 4;
-  background: #bcc9e3;
-  border-radius: 9px;
-  padding: 2px 5px;
-  cursor: pointer;
-  transition: 0.4s;
-  width: 100%;
-  max-width: 200px;
-  justify-self: right;
+.view_analysis_api .loading {
+  grid-column: 1 / -1;
+  grid-row: 2;
 }
 
-main.view_analysis_api .flow_view {
-  display: grid;
-  grid-column: 5;
-  grid-row: 4;
-  background: #bcc9e3;
-  border-radius: 9px;
-  padding: 2px 5px;
-  cursor: pointer;
-  transition: 0.4s;
-  width: 100%;
-  max-width: 180px;
-  justify-self: left;
-}
-
-main.view_analysis_api .media_download {
-  display: grid;
-  grid-column: 5;
+.view_analysis_api .postlink {
+  grid-column: 1 / -1;
   grid-row: 3;
-  background: #bcc9e3;
-  border-radius: 9px;
-  padding: 2px 5px;
-  cursor: pointer;
-  transition: 0.4s;
-  width: 100%;
-  max-width: 180px;
-  justify-self: left;
 }
 
+.carousel-container {
+  grid-column: 3;
+  grid-row: 3;
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding-top: 40px;
+  min-height: 20px;
+}
+
+/* carousel */
+.carousel {
+  display: flex;
+  gap: 12px;
+  overflow: visible;
+  scroll-behavior: smooth;
+  padding: 0 50px;
+  flex: 1;
+  max-width: 100%;
+  position: relative;
+}
+
+.carousel form {
+  flex-shrink: 0;
+  display: none;
+  position: relative;
+}
+
+.carousel form:nth-child(1),
+.carousel form:nth-child(2),
+.carousel form:nth-child(3),
+.carousel form:nth-child(4),
+.carousel form:nth-child(5),
+.carousel form:nth-child(6) {
+  display: block;
+}
+
+.carousel button {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%);
+  cursor: pointer;
+  font-size: 24px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: visible;
+}
+
+.carousel button:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+  border-color: #4CAF50;
+  background: linear-gradient(135deg, #ffffff 0%, #e8f5e9 100%);
+}
+
+.carousel button:active {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Tooltip */
+.carousel button::before {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 10px;
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  z-index: 9999;
+}
+
+.carousel button::after {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 2px;
+  border: 8px solid transparent;
+  border-top-color: rgba(0, 0, 0, 0.9);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 9999;
+}
+
+.carousel button:hover::before,
+.carousel button:hover::after {
+  opacity: 1;
+}
+
+.nav-button {
+  position: absolute;
+  top: calc(50% + 30px);
+  transform: translateY(-75%);
+  width: 35px;
+  height: 35px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 100;
+}
+
+.nav-button:hover {
+  background: rgba(0, 0, 0, 0.8);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.nav-button.right {
+  right: 5px;
+}
+
+.nav-button.left {
+  left: 5px;
+}
+
+/* display */
 main.view_analysis_api .viewcode {
   display: grid;
   grid-column: 2 / 6;
-  grid-row: 5 / 6;
+  grid-row: 4;
   font-size: 12px;
   max-width: 920px;
   max-height: 600px;

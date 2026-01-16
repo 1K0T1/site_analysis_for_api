@@ -1,5 +1,11 @@
 const socket = io();
 
+let selectedFile = null;
+
+function getSelectedFile() {
+    return selectedFile;
+}
+
 // 🔹 Обновление списка файлов
 socket.on('update_files', (files) => {
     const select = document.getElementById('fileList');
@@ -25,8 +31,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!select) return;
 
     select.addEventListener('change', (e) => {
-        const selectedFile = e.target.value;
-        socket.emit('file_selected', selectedFile);
+        window.selectedFile = e.target.value;
+        socket.emit('file_selected', window.selectedFile);
     });
 
     socket.emit('request_files'); // запрос сразу при загрузке

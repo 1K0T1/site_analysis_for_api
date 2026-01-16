@@ -30,7 +30,7 @@ from loguru import logger
 # отдельные функции
 from gmail_restore import Restore_account
 from data_sql import Data_base
-from create_instructions_and_API import Instructions_API
+from create_instructions_and_API import Instructions_API, Instructions_Code
 from fileopen import Open_List, Open_File, Download_File, Download_All, AiGenerate
 from log.log import log_server
 
@@ -46,10 +46,6 @@ socketio = SocketIO(app, manage_session=False, async_mode="threading")
 ph = PasswordHasher()
 
 log_server()
-
-# убераем логирование socketio и engineio
-# logging.getLogger("engineio").setLevel(logging.ERROR)
-# logging.getLogger("socketio").setLevel(logging.ERROR)
 
 
 # рендер 1 страницы
@@ -203,7 +199,7 @@ def view_file(filename):
 
         emit("file_chosen", {"fileMessage": data_url})
 
-        logger.success("The contents of the file are displayed")
+        logger.success(f"User: {name}; The contents of the file are displayed")
     else:
         emit("file_chosen", {"fileMessage": open_file})
 
@@ -325,6 +321,23 @@ def route_flow_view():
     return jsonify({"status": True})
 
 
+# decode mifinified files
+def run_reverse_minification(name, code):
+    Instructions_Code().decode_code(name, code)
+
+
+@app.route("/view_analysis_api/reverse_minification", methods=["POST", "GET"])
+def revers_minification():
+    name = session.get("name")
+    if request.method == "POST":
+        file_name = request.form.get("filename")
+        logger.info(f"Name: {name}, Get file: {file_name}")
+        code = request.form.get("code")
+        p = Process(target=run_reverse_minification, args=(name, file_name))
+        p.start()
+    return jsonify({"status": True})
+
+
 # анализ с помощью AI
 def ai_generate(name, links):
     urls = AiGenerate().sort_links(name, links)
@@ -348,8 +361,8 @@ def page_not_found(e):
 
 # лог и самоподписанный сертификат
 if __name__ == "__main__":
-    cert_path = Path(__file__).parent / "pem" / r"localhost+2.pem"
-    key_path = Path(__file__).parent / "pem" / r"localhost+2-key.pem"
+    cert_path = Path(__file__).parent / "pem" / r"secret+2.pem"
+    key_path = Path(__file__).parent / "pem" / r"secret+2-key.pem"
     socketio.run(
         app, debug=False, use_reloader=False, ssl_context=(cert_path, key_path)
     )
