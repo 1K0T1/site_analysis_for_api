@@ -474,12 +474,12 @@ class Instructions_API:
 
 # decode files
 class Instructions_Code:
-    def decode_code(self, name, script):
+    def minified_code(self, name, script):
         file_path = Path(__file__).parent / "users_file" / name / script
         file_name = file_path.name
         file_without_ext = file_path.suffix
 
-        # decode js file
+        # formattable minified js file
         if file_without_ext == ".js":
             with open(file_path, "r+", encoding="utf-8") as f:
                 js_code = f.read()
@@ -489,3 +489,22 @@ class Instructions_Code:
                 f.truncate()
         else:
             return None
+    
+    def beautifier_code(self, name, script):
+        one_file_path = Path(__file__).parent / "users_file" / name / script
+        file_name = one_file_path.name
+        two_file_name = Path(__file__).parent / "users_file" / name / file_name
+        file_without_ext = one_file_path.suffix
+
+        # formattable beautifier js file
+        if file_without_ext == ".js":
+            with open(one_file_path, "r+", encoding="utf-8") as f:
+                js_code = f.read()
+                beautified = jsbeautifier.beautify(js_code)
+                subprocess.run(
+                    ['npx.cmd', 'webcrack', one_file_path, '-o', two_file_name],
+                    capture_output=True,
+                    text=True
+                )
+            return None
+
