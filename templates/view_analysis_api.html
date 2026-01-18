@@ -52,7 +52,10 @@
                     <button type="submit" data-tooltip="Поймать поток json/медиа">🌊</button>
                 </form>
                 <form id="reverse_minification" class="reverse_minification">
-                    <button type="submit" data-tooltip="Обратное минифицирование">🛠️</button>
+                    <button type="submit" data-tooltip="Обратное минифицирование">🪛</button>
+                </form>
+                <form id="reverse_obfuscated" class="reverse_obfuscated">
+                    <button type="submit" data-tooltip="Обратная обфускациия">🔧</button>
                 </form>
             </div>
 
@@ -81,7 +84,8 @@
     <script src="{{ url_for('static', filename='check_flow.js') }}"></script>
     <script src="{{ url_for('static', filename='check_media.js') }}"></script>
     <script src="{{ url_for('static', filename='copycode.js') }}"> </script>
-    <script src="{{ url_for('static', filename='post_decode.js') }}"> </script>
+    <script src="{{ url_for('static', filename='post_minification.js') }}"> </script>
+    <script src="{{ url_for('static', filename='post_obfuscated.js') }}"> </script>
     <script src="{{ url_for('static', filename='scrollCarousel.js') }}"> </script>
 </body>
 

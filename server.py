@@ -323,7 +323,7 @@ def route_flow_view():
 
 # decode mifinified files
 def run_reverse_minification(name, code):
-    Instructions_Code().decode_code(name, code)
+    Instructions_Code().minified_code(name, code)
 
 
 @app.route("/view_analysis_api/reverse_minification", methods=["POST", "GET"])
@@ -331,10 +331,27 @@ def revers_minification():
     name = session.get("name")
     if request.method == "POST":
         file_name = request.form.get("filename")
-        logger.info(f"Name: {name}, Get file: {file_name}")
         code = request.form.get("code")
         p = Process(target=run_reverse_minification, args=(name, file_name))
         p.start()
+        logger.info(f"Name: {name}, reverse minification file: {file_name}")
+    return jsonify({"status": True})
+
+
+# decode obfuscated files
+def run_reverse_obfuscated(name, code):
+    Instructions_Code().beautifier_code(name, code)
+
+
+@app.route("/view_analysis_api/reverse_obfuscated", methods=["POST", "GET"])
+def reverse_obfuscated():
+    name = session.get("name")
+    if request.method == "POST":
+        file_name = request.form.get("filename")
+        code = request.form.get("code")
+        p = Process(target=run_reverse_obfuscated, args=(name, file_name))
+        p.start()
+        logger.info(f"Name: {name}, reverse obfuscated file: {file_name}")
     return jsonify({"status": True})
 
 
