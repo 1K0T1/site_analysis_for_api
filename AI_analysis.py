@@ -1,20 +1,41 @@
-from transformers import pipeline
-import torch
+from google import genai
+from pathlib import Path
+from dotenv import load_dotenv
+import os
 
-# модели
-classifier = pipeline("text2text-generation", model="facebook/bart-large-cnn", device=0)
+env_key = Path(__file__).parent / "key" / ".env"
+
+load_dotenv(dotenv_path=env_key)
+
+client = genai.Client(api_key=os.getenv("GENAI_API_KEY"))
 
 
-class AI_Analysis_Links:
-    __slots__ = ("link",)
+class AiGenerate:
+    def __init__(self, name, web_file, additionally):
+        self.name = name
+        self.web_file = web_file
+        self.additionally = additionally
 
-    def __init__(self, link):
-        self.link = link
+    # генерация
+    def file_analys(self):
+        path_code = Path(__file__).parent / "users_file" / self.name / self.web_file
+        text_file = Path(__file__).parent / "users_file" / self.name / "response.txt"
 
-    # генерация обьяснения ссылок
-    def links_analys(self):
-        promt = f"Explain what this website or link is used for: {self.link}"
-        explanation = classifier(promt, max_new_tokens=80, do_sample=False)[0][
-            "generated_text"
-        ]
-        return explanation
+        with open(path_code, "r+", encoding="utf-8") as f:
+            code = f.read()
+
+        if self.additionally != None:
+            result = client.models.generate_content(
+                model="gemini-3-flash-preview",
+                contents=f"{self.additionally} Ответь на русском и подробно проаналезируй код: {code}",
+            )
+        else:
+            result = client.models.generate_content(
+                model="gemini-3-flash-preview",
+                contents=f"Ответь на русском и подробно проаналезируй код: {code}",
+            )
+
+        with open(text_file, "w", encoding="utf-8") as f:
+            f.write(result.text)
+
+        return result.text

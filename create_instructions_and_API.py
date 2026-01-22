@@ -489,7 +489,7 @@ class Instructions_Code:
                 f.truncate()
         else:
             return None
-    
+
     def beautifier_code(self, name, script):
         one_file_path = Path(__file__).parent / "users_file" / name / script
         file_name = one_file_path.name
@@ -499,21 +499,24 @@ class Instructions_Code:
         # formattable beautifier js file
         if file_without_ext == ".js":
             with open(one_file_path, "r+", encoding="utf-8") as f:
-                js_code = f.read()
-                beautified = jsbeautifier.beautify(js_code)
                 result = subprocess.run(
-                    ['npx.cmd', 'webcrack', str(one_file_path), '-o', str(two_file_name)],
+                    [
+                        "npx.cmd",
+                        "webcrack",
+                        str(one_file_path),
+                        "-o",
+                        str(two_file_name),
+                    ],
                     capture_output=True,
-                    text=True
+                    text=True,
                 )
                 if result.returncode == 0:
                     files_dir = Path(__file__).parent / "users_file" / name
-                    
+
                     for item in two_file_name.rglob("*"):
                         if item.is_file():
-                            shutil.move(str(item), str(files_dir  / item.name))
-                    
+                            shutil.move(str(item), str(files_dir / item.name))
+
                     shutil.rmtree(two_file_name)
         else:
             return None
-

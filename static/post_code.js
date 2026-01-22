@@ -1,8 +1,20 @@
-document.getElementById("AIgenerate").addEventListener("submit", function (e) {
+// Отслеживаем изменение выбора файла в списке
+document.getElementById("fileList").addEventListener('change', (event) => {
+    const selectedOption = event.target.value;
+
+    if (selectedOption) {
+        window.selectedFile = selectedOption; // сохраняем выбранный файл глобально
+        console.log('Файл выбран:', window.selectedFile);
+    } else {
+        window.selectedFile = null; // сбрасываем если ничего не выбрано
+    }
+});
+
+// Обработка отправки формы
+document.getElementById("post_code").addEventListener("submit", function (e) {
     e.preventDefault(); // отменяем стандартную отправку формы
 
-    const selectedOption = document.getElementById("fileList").value; // получаем выбранный элемент
-    if (!selectedOption) {
+    if (!window.selectedFile) {
         alert("Выберите файл из списка!");
         return;
     }
@@ -11,8 +23,8 @@ document.getElementById("AIgenerate").addEventListener("submit", function (e) {
     const formData = new FormData();
     const blob = new Blob([content], { type: "text/plain" });
 
-    // добавляем файл с именем из select
-    formData.append("file", blob, selectedOption);
+    // добавляем файл с именем из window.selectedFile
+    formData.append("file", blob, window.selectedFile);
 
     fetch(this.action, {
         method: "POST",

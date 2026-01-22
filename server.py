@@ -31,7 +31,8 @@ from loguru import logger
 from gmail_restore import Restore_account
 from data_sql import Data_base
 from create_instructions_and_API import Instructions_API, Instructions_Code
-from fileopen import Open_List, Open_File, Download_File, Download_All, AiGenerate
+from fileopen import Open_List, Open_File, Download_File, Download_All
+from AI_analysis import AiGenerate
 from log.log import log_server
 
 # from AI_analysis import AI_Analysis_Links
@@ -44,6 +45,8 @@ app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")
 socketio = SocketIO(app, manage_session=False, async_mode="threading")
 ph = PasswordHasher()
+
+app.config["MAX_CONTENT_LENGTH"] = 50 * 1024 * 1024
 
 log_server()
 
@@ -356,18 +359,20 @@ def reverse_obfuscated():
 
 
 # анализ с помощью AI
-def ai_generate(name, links):
-    urls = AiGenerate().sort_links(name, links)
-    return urls
+def run_ai_generate(name, file_name, additionally):
+    AiGenerate(name, file_name, additionally).file_analys()
 
 
 @app.route("/view_analysis_api/generate/analysis", methods=["GET", "POST"])
 def route_to_ai():
     name = session.get("name")
-    file = None
-    p = Process(target=ai_generate, args=(name, file))
-    p.start()
-    return jsonify({"status": "started"})
+    if request.method == "POST":
+        file_name = request.form.get("filename")
+        additionally = request.form.get("additionally")
+        p = Process(target=run_ai_generate, args=(name, file_name, additionally))
+        p.start()
+        logger.info(f"User: {name}, Ai generate file: {file_name}")
+    return jsonify({"status": True})
 
 
 @app.errorhandler(404)

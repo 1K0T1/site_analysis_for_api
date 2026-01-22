@@ -164,16 +164,3 @@ class Download_All:
         if zip_path.is_file():
             return zip_path
         return None
-
-
-class AiGenerate:
-
-    def sort_links(self, name, links):
-        users_files = Path(__file__).parent / "users_file" / name
-        uploads = Path(__file__).parent / users_files / "uploads"
-        uploads.mkdir(parents=True, exist_ok=True)
-        with open(links, "r+", encoding="utf-8") as f:
-            lines = f.readlines()
-
-        lines = list(dict.fromkeys(lines))
-        return lines

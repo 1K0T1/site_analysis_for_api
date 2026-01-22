@@ -16,3 +16,9 @@ test.txt
 server.log
 
 __init__.py
+
+#файлы ключей
+.env
+.env.*
+key/.env
+key/.env.*

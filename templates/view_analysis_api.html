@@ -39,7 +39,7 @@
                 <form class="allfiles" id="download-all-files">
                     <button type="submit" data-tooltip="Скачать все файлы">📦</button>
                 </form>
-                <form class="AIgenerate" action="/view_analysis_api/generate/analysis">
+                <form id="AIgenerate" class="AIgenerate">
                     <button type="submit" data-tooltip="Проанализировать файл (Ai)">🤖</button>
                 </form>
                 <form class="copy">
@@ -72,6 +72,11 @@
             <audio id="audio" controls style="display:none;"></audio>
             <video id="video" controls style="display:none; max-width:300px;"></video>
         </pre>
+
+        <form class="additionally_form">
+            <textarea class="additionally" name="additionally" rows="20" cols="500" form="AIgenerate"
+                placeholder="Дополнительное сообщение для ИИ"></textarea>
+        </form>
     </main>
 
     <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
@@ -87,6 +92,7 @@
     <script src="{{ url_for('static', filename='post_minification.js') }}"> </script>
     <script src="{{ url_for('static', filename='post_obfuscated.js') }}"> </script>
     <script src="{{ url_for('static', filename='scrollCarousel.js') }}"> </script>
+    <script src="{{ url_for('static', filename='post_ai.js')}}"></script>
 </body>
 
 </html>
