@@ -51,7 +51,25 @@ app.config["MAX_CONTENT_LENGTH"] = 50 * 1024 * 1024
 log_server()
 
 
-# рендер 1 страницы
+# CSP settings
+@app.after_request
+def csp(response):
+    response.headers["Content-Security-Policy"] = (
+        "default-src 'self'; "
+        "script-src 'self' https://cdn.socket.io https://cdnjs.cloudflare.com; "
+        "style-src 'self' 'unsafe-inline'; 'unsafe-inline' https://cdnjs.cloudflare.com; "
+        "img-src 'self' https: data:; "
+        "connect-src 'self' ws: wss:; "
+        "font-src 'self' data:; "
+        "media-src 'self' https:; "
+        "object-src 'none'; "
+        "base-uri 'self'; "
+        "frame-ancestors 'self'; "
+    )
+    return response
+
+
+# main page
 @app.route("/")
 def index():
     return render_template("index.html")

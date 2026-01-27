@@ -24,7 +24,7 @@
         </form>
 
         <div class="carousel-container">
-            <button type="button" class="nav-button left" onclick="scrollCarousel(-1)">&#9664;</button>
+            <button type="button" class="nav-button left" id="leftBtn">&#9664;</button>
 
             <div class="carousel" id="Carousel">
                 <form class="list" id="download-list" action="/view_analysis_api/link">
@@ -43,7 +43,7 @@
                     <button type="submit" data-tooltip="Проанализировать файл (Ai)">🤖</button>
                 </form>
                 <form class="copy">
-                    <button type="button" onclick="copyCode()" data-tooltip="Копировать">📋</button>
+                    <button type="button" id="copyCode" data-tooltip="Копировать">📋</button>
                 </form>
                 <form id="media_download" class="media_download">
                     <button type="submit" data-tooltip="Скачать все медиа">🖼️</button>
@@ -59,18 +59,18 @@
                 </form>
             </div>
 
-            <button type="button" class="nav-button right" onclick="scrollCarousel(1)">&#9654;</button>
+            <button type="button" class="nav-button right" id="rightBtn">&#9654;</button>
         </div>
 
-        <select class="listfile" id="fileList" name="buttonurl" size="16">
+        <select class=" listfile" id="fileList" name="buttonurl" size="16">
             <option disabled>Загрузка...</option>
         </select>
 
         <pre id="copy" class="viewcode">
             <code id="fileMessage"></code>
-            <img id="img" style="display:none; max-width:300px;">
-            <audio id="audio" controls style="display:none;"></audio>
-            <video id="video" controls style="display:none; max-width:300px;"></video>
+            <img id="img" style="display:none !important; max-width:300px;">
+            <audio id="audio" controls style="display:none !important;"></audio>
+            <video id="video" controls style="display:none !important; max-width:300px;"></video>
         </pre>
 
         <form class="additionally_form">

@@ -555,7 +555,7 @@ main.view_analysis_api .viewcode {
 }
 
 main.view_analysis_api .viewcode code {
-  display: block;
+  display: block !important;
   padding: 4px 20px;
   border-radius: 10px;
   white-space: pre;
