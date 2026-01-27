@@ -10,12 +10,20 @@
 </head>
 <body class="register">
     <h1 class="grid-h1">Добро пожаловать!</h1>
-    <form action="/register" method="post" class="grid_register">
-        <label>Придумайте логин: <input type="text" name="username"></label>
-        <label>Пароль: <input type="password" name="password"></label>
-        <label>Email: <input type="email" name="email"></label>
+    <form action="/register" method="post" class="grid_register" id="registerForm">
+
+        <label>Придумайте логин: <input type="text" name="username" id="username"></label>
+
+        <label>Пароль: <input type="password" name="password" id="password"></label>
+
+        <label>Email: <input type="email" name="email" id="email"></label>
+        
         <button type="submit" class="item1">Зарегистрироваться</button>
     </form>
+    
     <h3>{{message}}</h3>
+
+    <script src="{{ url_for('static', filename='validation_reg.js') }}"></script>
+
 </body>
 </html>

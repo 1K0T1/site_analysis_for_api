@@ -9,22 +9,22 @@ from multiprocessing import Process
 import sys
 
 from flask import (
-    Flask,  # основной класс приложения
-    render_template,  # для рендеринга HTML-шаблонов
-    request,  # доступ к данным запроса GET/POST
-    redirect,  # перенаправление на другие маршруты
-    url_for,  # генерация URL по имени функции
-    jsonify,  # для возврата JSON-ответов
-    make_response,  # для создания объектов ответа вручную
-    session,  # хранение данных между запросами
-    flash,  # временные сообщения для пользователя
-    get_flashed_messages,  # получение flash-сообщений
-    g,  # специальный объект для хранения данных в течение одного запроса
-    send_file,  # для скачивания файла клиенту
+    Flask,
+    render_template,
+    request,
+    redirect,
+    url_for,
+    jsonify,
+    make_response,
+    session,
+    flash,
+    get_flashed_messages,
+    g,
+    send_file,
 )
 from flask_socketio import SocketIO, emit
 from argon2 import PasswordHasher, exceptions
-from dotenv import load_dotenv  # для токенов
+from dotenv import load_dotenv
 from loguru import logger
 
 # отдельные функции
@@ -35,7 +35,6 @@ from fileopen import Open_List, Open_File, Download_File, Download_All
 from AI_analysis import AiGenerate
 from log.log import log_server
 
-# from AI_analysis import AI_Analysis_Links
 
 env_key = Path(__file__).parent / "key" / ".env"
 
@@ -86,9 +85,12 @@ def register():
     hash_password = None
     if request.method == "POST":
         login = request.form.get("username")
+        login = login.strip()
         password = request.form.get("password")
+        password = password.strip()
         hash_password = ph.hash(password)  # хешируем пароль
         email = request.form.get("email")
+        email = email.strip()
 
     # если введен логин пароль и эмайл
     if login and password and email:
@@ -399,7 +401,7 @@ def page_not_found(e):
     return render_template("404.html"), 404
 
 
-# лог и самоподписанный сертификат
+# log and pem
 if __name__ == "__main__":
     cert_path = Path(__file__).parent / "pem" / r"secret+2.pem"
     key_path = Path(__file__).parent / "pem" / r"secret+2-key.pem"
