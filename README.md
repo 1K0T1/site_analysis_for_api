@@ -38,20 +38,20 @@
 ---
 
 ## ⚙️ <h2 align="center">Downloads cloudflared</h2>
-\```
+```
 macOS
 >>brew install cloudflared
-
 
 
 Windows
 >>winget install --id Cloudflare.cloudflared
 
+
 Linux
 >>wget https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64
 >>chmod +x cloudflared-linux-amd64
 >>sudo mv cloudflared-linux-amd64 /usr/local/bin/cloudflared
-\```
+```
 
 gh repo clone 1K0T1/site_analysis_for_api
 
