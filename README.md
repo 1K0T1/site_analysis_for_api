@@ -37,7 +37,8 @@
 
 ---
 
-## ⚙️ <h2 align="center">Downloads cloudflared</h2>
+## ⚙️ Download
+<h2 align="center">Cloudflared</h2>
 ```
 macOS
 >>brew install cloudflared
@@ -52,6 +53,12 @@ Linux
 >>chmod +x cloudflared-linux-amd64
 >>sudo mv cloudflared-linux-amd64 /usr/local/bin/cloudflared
 ```
+
+```
+Python version 3.14.0
+```
+
+---
 
 gh repo clone 1K0T1/site_analysis_for_api
 
