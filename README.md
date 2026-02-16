@@ -37,11 +37,7 @@
 
 ---
 
-## ⚙️ Установка
-
-```
-
-<h1 align="center">Downloads cloudflared</h1>
+## ⚙️ <h2 align="center">Downloads cloudflared</h2>
 \```
 macOS
 >>brew install cloudflared
