@@ -55,7 +55,13 @@ Linux
 >>sudo mv cloudflared-linux-amd64 /usr/local/bin/cloudflared
 ```
 
-```Python version 3.14.0```
+---
+
+
+```
+Python version 3.14.0
+>>https://www.python.org/downloads/release/python-3140/
+```
 
 ---
 
