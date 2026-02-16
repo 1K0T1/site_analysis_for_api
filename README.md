@@ -39,6 +39,7 @@
 
 ## ⚙️ Download
 <h2 align="center">Cloudflared</h2>
+
 ```
 macOS
 >>brew install cloudflared
@@ -54,9 +55,7 @@ Linux
 >>sudo mv cloudflared-linux-amd64 /usr/local/bin/cloudflared
 ```
 
-```
-Python version 3.14.0
-```
+```Python version 3.14.0```
 
 ---
 
