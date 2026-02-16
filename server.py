@@ -49,8 +49,6 @@ app.config["MAX_CONTENT_LENGTH"] = 50 * 1024 * 1024
 
 log_server()
 
-LIMIT = Semaphore(2)
-
 
 # CSP settings
 @app.after_request
@@ -183,7 +181,7 @@ def restore_password(token):
 
 
 # страница создания инструкций и api
-def run_creature_api(link, name):
+def run_creature_api(link, name, LIMIT):
     with LIMIT:
         Instructions_API().open_resource(link, name)
 
@@ -196,7 +194,7 @@ def view_analysis_api():
     if request.method == "POST":
         link = request.form.get("buttonurl")
         Data_base().add_url(name, link)
-        p = Process(target=run_creature_api, args=(link, name))
+        p = Process(target=run_creature_api, args=(link, name, LIMIT))
         p.start()
     return render_template("view_analysis_api.html", message=namein)
 
@@ -251,15 +249,16 @@ def download_js():
 
 
 # пользователь скачивает ссылки
-def run_download(link, name):
-    Download_File().link_download(link, name)
+def run_download(link, name, LIMIT):
+    with LIMIT:
+        Download_File().link_download(link, name)
 
 
 @app.route("/view_analysis_api/link", methods=["GET", "POST"])
 def download_links():
     name = session.get("name")
     link = Data_base().open_url(name)[0]
-    p = Process(target=run_download, args=(link, name))
+    p = Process(target=run_download, args=(link, name, LIMIT))
     p.start()
     return jsonify({"status": "started"})
 
@@ -332,15 +331,16 @@ def route_media_load():
 
 
 # поймать поток если это доступно
-def run_flow_view(name, link):
-    Instructions_API().flow_download(link, name)
+def run_flow_view(name, link, LIMIT):
+    with LIMIT:
+        Instructions_API().flow_download(link, name)
 
 
 @app.route("/view_analysis_api/flow_view")
 def route_flow_view():
     name = session.get("name")
     link = Data_base().open_url(name)[0]
-    p = Process(target=run_flow_view, args=(name, link))
+    p = Process(target=run_flow_view, args=(name, link, LIMIT))
     p.start()
     if link is None:
         return jsonify({"status": False})
@@ -382,8 +382,9 @@ def reverse_obfuscated():
 
 
 # анализ с помощью AI
-def run_ai_generate(name, file_name, additionally):
-    AiGenerate(name, file_name, additionally).file_analys()
+def run_ai_generate(name, file_name, additionally, LIMIT):
+    with LIMIT:
+        AiGenerate(name, file_name, additionally).file_analys()
 
 
 @app.route("/view_analysis_api/generate/analysis", methods=["GET", "POST"])
@@ -392,7 +393,7 @@ def route_to_ai():
     if request.method == "POST":
         file_name = request.form.get("filename")
         additionally = request.form.get("additionally")
-        p = Process(target=run_ai_generate, args=(name, file_name, additionally))
+        p = Process(target=run_ai_generate, args=(name, file_name, additionally, LIMIT))
         p.start()
         logger.info(f"User: {name}, Ai generate file: {file_name}")
     return jsonify({"status": True})
@@ -404,14 +405,15 @@ def page_not_found(e):
     return render_template("404.html"), 404
 
 
-# log and pem
+# log, pem, limit
 if __name__ == "__main__":
+    LIMIT = Semaphore(2)
+
     cert_path = Path(__file__).parent / "pem" / r"secret+2.pem"
     key_path = Path(__file__).parent / "pem" / r"secret+2-key.pem"
+
     socketio.run(
         app,
         debug=False,
         use_reloader=False,
     )
-
-# ssl_context=(cert_path, key_path)
