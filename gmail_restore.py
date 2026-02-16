@@ -3,7 +3,7 @@ import yagmail
 
 class Restore_account:
     __slots__ = ("gmail", "url")
-    
+
     def __init__(self, gmail, url):
         self.gmail = gmail
         self.url = url

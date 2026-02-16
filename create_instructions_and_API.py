@@ -5,8 +5,10 @@ import subprocess
 import re
 import shutil
 from uuid import uuid4
+import threading
 
 from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeoutError
+from playwright.sync_api import Error as PlaywrightError
 from playwright._impl._errors import TargetClosedError
 from urllib.parse import urljoin, urlparse
 from urllib.parse import urljoin
@@ -15,35 +17,41 @@ import jsbeautifier
 
 from log.log import log_server
 
+LIMIT_BROWSER = threading.Semaphore(2)
+
 
 # что бы автоматом открывать и зыкрывать бразуер
 def browser(func):
     def wrapper(self, *args, **kwargs):
         with sync_playwright() as p:
-            browser = p.chromium.launch(
-                headless=False,
-                args=[
-                    "--disable-blink-features=AutomationControlled",
-                    "--disable-dev-shm-usage",
-                    "--no-sandbox",
-                    "--disable-infobars",
-                ],
-            )
-            context = browser.new_context(
-                user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0 Safari/537.36",
-                permissions=[
-                    "microphone",
-                    "camera",
-                    "clipboard-read",
-                    "clipboard-write",
-                ],
-            )
-            page = context.new_page()
-            result = func(self, page, *args, **kwargs)
-            try:
-                return result
-            finally:
-                browser.close()
+            with LIMIT_BROWSER:
+                try:
+                    browser = p.chromium.launch(
+                        headless=False,
+                        args=[
+                            "--disable-blink-features=AutomationControlled",
+                            "--disable-dev-shm-usage",
+                            "--no-sandbox",
+                            "--disable-infobars",
+                        ],
+                    )
+                    context = browser.new_context(
+                        user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0 Safari/537.36",
+                        permissions=[
+                            "microphone",
+                            "camera",
+                            "clipboard-read",
+                            "clipboard-write",
+                        ],
+                    )
+                    page = context.new_page()
+                    result = func(self, page, *args, **kwargs)
+                    try:
+                        return result
+                    finally:
+                        browser.close()
+                except PlaywrightError as e:
+                    return str(e)
 
     return wrapper
 
@@ -62,8 +70,8 @@ class Instructions_API:
 
         prefix = ["/popular-in"]
         links_a = []
-        templates = set()  # что бы не повторялись страницы
-        hrefs = set()  # что бы не повторялись страницы
+        templates = set()
+        hrefs = set()
 
         # все ссылки
         match = re.search(r"https?://([^/]+)/?", page.url)

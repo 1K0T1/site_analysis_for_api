@@ -5,7 +5,7 @@ from pathlib import Path
 import logging
 import base64
 import mimetypes
-from multiprocessing import Process
+from multiprocessing import Process, Semaphore
 import sys
 
 from flask import (
@@ -48,6 +48,8 @@ ph = PasswordHasher()
 app.config["MAX_CONTENT_LENGTH"] = 50 * 1024 * 1024
 
 log_server()
+
+LIMIT = Semaphore(2)
 
 
 # CSP settings
@@ -182,7 +184,8 @@ def restore_password(token):
 
 # страница создания инструкций и api
 def run_creature_api(link, name):
-    Instructions_API().open_resource(link, name)
+    with LIMIT:
+        Instructions_API().open_resource(link, name)
 
 
 @app.route("/view_analysis_api", methods=["GET", "POST", "DELETE"])
@@ -406,5 +409,9 @@ if __name__ == "__main__":
     cert_path = Path(__file__).parent / "pem" / r"secret+2.pem"
     key_path = Path(__file__).parent / "pem" / r"secret+2-key.pem"
     socketio.run(
-        app, debug=False, use_reloader=False, ssl_context=(cert_path, key_path)
+        app,
+        debug=False,
+        use_reloader=False,
     )
+
+# ssl_context=(cert_path, key_path)
