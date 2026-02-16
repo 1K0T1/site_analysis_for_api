@@ -57,10 +57,13 @@ Linux
 
 ---
 
+<h2 align="center">Python</h2>
 
 ```
 Python version 3.14.0
 >>https://www.python.org/downloads/release/python-3140/
+
+>>pip install -r requirements.txt
 ```
 
 ---
