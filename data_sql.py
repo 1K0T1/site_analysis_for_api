@@ -70,7 +70,8 @@ class Data_base:
             date TEXT NOT NULL,                      -- Дата регистрации
             token TEXT,                             -- Идентификатор токена
             reset_token TEXT,                       -- Время запроса в сек.
-            url TEXT                                 --ссылка парсинга
+            url TEXT,                                 --ссылка парсинга
+            ip TEXT                                  -- IP users
             )
         """
         )
@@ -148,3 +149,7 @@ class Data_base:
         cursor.execute("SELECT url FROM users WHERE login = ?", (name,))
         url_view = cursor.fetchone()
         return url_view
+
+    @sql_request
+    def add_ip(self, cursor, name, ip):
+        cursor.execute("UPDATE users SET ip = ? WHERE login = ?", (ip, name))

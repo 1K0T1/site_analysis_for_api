@@ -71,6 +71,11 @@ def csp(response):
 # main page
 @app.route("/")
 def index():
+    if request.headers.get("X-Forwarded-For"):
+        ip = request.headers.get("X-Forwarded-For").split(",")[0]
+    else:
+        ip = request.remote_addr
+    logger.info(f"Entry ip: {ip}")
     return render_template("index.html")
 
 
@@ -117,13 +122,20 @@ def login():
     answer = ""  # что бы код не ломался
     name = None
     password = None
+
     if request.method == "POST":
         name = request.form.get("username")
         password = request.form.get("password")
+
+    if request.headers.get("X-Forwarded-For"):
+        ip = request.headers.get("X-Forwarded-For").split(",")[0]
+    else:
+        ip = request.remote_addr
+
     # если пароль и логин введены
     if name and password:
         pas = Data_base().login(name)
-        logger.info(f"Entry: {name, password}")
+        logger.info(f"Entry: {name}  {password}")
         logger.info(f"Output: {pas}")
         # проверка если пароль и логин введены правильно
         try:
@@ -133,10 +145,16 @@ def login():
                     logger.info("Authorization")
                     answer = "Authorization"
                     session["name"] = name
+
+                    # ip in bd
+                    Data_base().add_ip(name, ip)
+                    logger.info(f"IP user: {name}  {ip}")
+
                     return redirect(url_for("view_analysis_api", username=name))
             else:
                 logger.info("Not authorization")
                 answer = "Not authorization"
+
         except exceptions.VerificationError:
             answer = "Not verification"
     return render_template("login.html", name=name, password=password, message=answer)
