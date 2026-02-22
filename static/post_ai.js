@@ -16,12 +16,15 @@ document.getElementById('AIgenerate').addEventListener('submit', async (event) =
         });
 
         if (response.ok) {
-            console.log('Анализ успешно отправлен');
+            showNotice(
+                `Файл "${window.selectedFile}" отправлен на анализ. Скоро результат response.txt появится в списке.`
+            );
         } else {
-            alert('Ошибка при отправке на анализ');
+            showNotice('Ошибка при отправке на анализ', 3000);
         }
+
     } catch (error) {
         console.error('Ошибка:', error);
-        alert('Ошибка соединения с сервером');
+        showNotice('Ошибка соединения с сервером', 3000);
     }
 });

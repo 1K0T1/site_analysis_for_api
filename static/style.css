@@ -561,6 +561,28 @@ main.view_analysis_api .viewcode code {
   white-space: pre;
 }
 
+/* notice */
+.ai-notice {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: #1f1f1f;
+  color: #fff;
+  padding: 15px 20px;
+  border-radius: 10px;
+  font-size: 14px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.4s ease;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  z-index: 9999;
+}
+
+.ai-notice.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 /* post additionally form */
 main.view_analysis_api .additionally_form {
   display: grid;
