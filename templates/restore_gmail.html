@@ -3,17 +3,33 @@
 <head>
     <meta charset="UTF-8"> 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="secret letter"> <!-- для поисковика -->
-    <title>Secret</title>
+    <meta name="description" content="Восстановление пароля">
+    <title>Восстановление пароля | Secret</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
 </head>
 <body class="restore_gmail">
-    <h1 class="grid-h1">Добро пожаловать!</h1>
-    <form action="/restore" method="post" class="from">
-        <label for="gmailinput">Введите почту:</label>
-        <input type="email" name="email" id="gmailinput">
-        <button type="submit" class="item1">Отправить</button>
-    </form>
+    <div class="auth-wrapper">
+        <div class="auth-card">
+            <h1 class="grid-h1">Сброс пароля</h1>
+            <p class="auth-subtitle">Укажите вашу почту, и мы отправим ссылку для восстановления</p>
+
+            <form action="/restore" method="post" class="from auth-form">
+                <div class="form-group">
+                    <label for="gmailinput">Email адрес</label>
+                    <input type="email" name="email" id="gmailinput" placeholder="name@example.com" required autocomplete="email">
+                </div>
+                <button type="submit" class="item1 btn-submit">Отправить ссылку</button>
+            </form>
+
+            <div class="auth-footer">
+                <a href="{{ url_for('login') }}">Вернуться ко входу</a>
+            </div>
+
+            {% if message %}
+            <h3 class="auth-message">{{ message }}</h3>
+            {% endif %}
+        </div>
+    </div>
 </body>
 </html>

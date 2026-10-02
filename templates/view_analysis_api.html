@@ -1,84 +1,96 @@
 <!DOCTYPE html>
 <html lang="ru">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="secret letter">
-    <title>Secret</title>
+    <meta name="description" content="Инспектор кода и анализатор API">
+    <title>Панель анализа | Secret</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
 </head>
-
 <body>
     <main class="view_analysis_api">
-        <strong class="name">{{message}}</strong>
-        <strong class="loading" id="status">{{loading_message}}</strong>
+        <!-- status -->
+        <header class="analyzer-header">
+            <div class="analyzer-top-bar">
+                <div class="brand-badge">
+                    <span></span>
+                    Secret Inspector
+                </div>
+                <div class="status-group">
+                    <strong class="name">{{ message }}</strong>
+                    <strong class="loading" id="status">{{ loading_message }}</strong>
+                </div>
+            </div>
 
-        <form method="post" action="/view_analysis_api" class="postlink">
-            <label>Введите ссылку</label>
-            <input type="url" class="inputurl" name="buttonurl">
-            <input type="submit" class="buttonurl">
-        </form>
+            <form method="post" action="/view_analysis_api" class="postlink">
+                <label for="inputurl">Введите ссылку</label>
+                <input type="url" id="inputurl" class="inputurl" name="buttonurl" placeholder="https://example.com/api или страница для парсинга" required>
+                <input type="submit" class="buttonurl" value="Анализ">
+            </form>
+        </header>
 
+        <!-- carousel -->
         <div class="carousel-container">
-            <button type="button" class="nav-button left" id="leftBtn">&#9664;</button>
+            <button type="button" class="nav-button left" id="leftBtn" aria-label="Назад">&#9664;</button>
 
             <div class="carousel" id="Carousel">
                 <form class="list" id="download-list" action="/view_analysis_api/link">
                     <button type="submit" data-tooltip="Скачать список ссылок">📎</button>
                 </form>
                 <form class="filehtml" action="/view_analysis_api/html">
-                    <button type="submit" data-tooltip="Скачать html файлы">🌐</button>
+                    <button type="submit" data-tooltip="Скачать HTML файлы">🌐</button>
                 </form>
                 <form class="filejs" action="/view_analysis_api/js">
-                    <button type="submit" data-tooltip="Скачать js файлы">📜</button>
+                    <button type="submit" data-tooltip="Скачать JS файлы">📜</button>
                 </form>
                 <form class="allfiles" id="download-all-files">
                     <button type="submit" data-tooltip="Скачать все файлы">📦</button>
                 </form>
                 <form id="AIgenerate" class="AIgenerate">
-                    <button type="submit" data-tooltip="Проанализировать файл (Ai)">🤖</button>
+                    <button type="submit" data-tooltip="Проанализировать файл (AI)">🤖</button>
                 </form>
                 <form class="copy">
-                    <button type="button" id="copyCode" data-tooltip="Копировать">📋</button>
+                    <button type="button" id="copyCode" data-tooltip="Копировать код">📋</button>
                 </form>
                 <form id="media_download" class="media_download">
-                    <button type="submit" data-tooltip="Скачать все медиа">🖼️</button>
+                    <button type="submit" data-tooltip="Скачать всё медиа">🖼️</button>
                 </form>
                 <form id="flow_view" class="flow_view">
-                    <button type="submit" data-tooltip="Поймать поток json/медиа">🌊</button>
+                    <button type="submit" data-tooltip="Поймать поток JSON / медиа">🌊</button>
                 </form>
                 <form id="reverse_minification" class="reverse_minification">
                     <button type="submit" data-tooltip="Обратное минифицирование">🪛</button>
                 </form>
                 <form id="reverse_obfuscated" class="reverse_obfuscated">
-                    <button type="submit" data-tooltip="Обратная обфускациия">🔧</button>
+                    <button type="submit" data-tooltip="Деобфускация кода">🔧</button>
                 </form>
             </div>
 
-            <button type="button" class="nav-button right" id="rightBtn">&#9654;</button>
+            <button type="button" class="nav-button right" id="rightBtn" aria-label="Вперёд">&#9654;</button>
         </div>
 
-        <select class=" listfile" id="fileList" name="buttonurl" size="16">
-            <option disabled>Загрузка...</option>
-        </select>
+        <!-- workspace files -->
+        <div class="workspace-layout">
+            <aside class="files-panel">
+                <div class="panel-header">Файлы проекта</div>
+                <select class="listfile" id="fileList" name="buttonurl" size="16">
+                    <option disabled>Загрузка файлов...</option>
+                </select>
+            </aside>
 
-        <pre id="copy" class="viewcode">
-            <code id="fileMessage"></code>
-            <img id="img" style="display:none !important; max-width:300px;">
-            <audio id="audio" controls style="display:none !important;"></audio>
-            <video id="video" controls style="display:none !important; max-width:300px;"></video>
-        </pre>
+            <section class="viewer-panel">
+                <pre id="copy" class="viewcode"><code id="fileMessage"></code><img id="img" alt="Предпросмотр изображения" style="display:none !important; max-width:100%;"><audio id="audio" controls style="display:none !important; width:100%;"></audio><video id="video" controls style="display:none !important; max-width:100%;"></video></pre>
 
-        <form class="additionally_form">
-            <textarea class="additionally" name="additionally" rows="20" cols="500" form="AIgenerate"
-                placeholder="Дополнительное сообщение для ИИ"></textarea>
-        </form>
+                <form class="additionally_form">
+                    <textarea class="additionally" name="additionally" rows="3" form="AIgenerate" placeholder="Дополнительное задание или системный контекст для ИИ..."></textarea>
+                </form>
+            </section>
+        </div>
     </main>
 
+    <!-- connections scripts -->
     <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script src="{{ url_for('static', filename='viewfile.js') }}"></script>
@@ -88,14 +100,13 @@
     <script src="{{ url_for('static', filename='post_code.js') }}"></script>
     <script src="{{ url_for('static', filename='check_flow.js') }}"></script>
     <script src="{{ url_for('static', filename='check_media.js') }}"></script>
-    <script src="{{ url_for('static', filename='copycode.js') }}"> </script>
-    <script src="{{ url_for('static', filename='post_minification.js') }}"> </script>
-    <script src="{{ url_for('static', filename='post_obfuscated.js') }}"> </script>
-    <script src="{{ url_for('static', filename='scrollCarousel.js') }}"> </script>
-    <script src="{{ url_for('static', filename='post_ai.js')}}"></script>
-    <script src="{{ url_for('static', filename='notifications.js')}}"></script>
+    <script src="{{ url_for('static', filename='copycode.js') }}"></script>
+    <script src="{{ url_for('static', filename='post_minification.js') }}"></script>
+    <script src="{{ url_for('static', filename='post_obfuscated.js') }}"></script>
+    <script src="{{ url_for('static', filename='scrollCarousel.js') }}"></script>
+    <script src="{{ url_for('static', filename='post_ai.js') }}"></script>
+    <script src="{{ url_for('static', filename='notifications.js') }}"></script>
 
     <div id="globalNotice" class="ai-notice"></div>
 </body>
-
 </html>
