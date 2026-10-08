@@ -1,0 +1,27 @@
+# среда
+venv/
+.venv/
+vscode/
+.vscode/
+
+# временные файлы
+__pycache__/
+*.pyc
+
+# папки
+data_base/
+users_file/
+
+#тесты
+test.py
+tests.py
+test.txt
+server.log
+
+__init__.py
+
+#файлы ключей
+.env
+.env.*
+key/.env
+key/.env.*
